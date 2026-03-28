@@ -1,55 +1,2023 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Woodstone CRM</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildFlow CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg:#0b0d11;--s1:#13161e;--s2:#1a1e2a;--s3:#222736;--s4:#2c3247;
+  --border:#2e3448;--border2:#3a4160;
+  --accent:#f97316;--accent-dim:rgba(249,115,22,0.15);
+  --gold:#f59e0b;--green:#22c55e;--green-dim:rgba(34,197,94,0.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,0.12);--purple:#a855f7;
+  --text:#f1f5f9;--t2:#94a3b8;--t3:#566480;--t4:#374258;
+  --fd:'Bebas Neue',sans-serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);display:flex;font-size:14px}
+.sb{width:220px;min-height:100vh;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
+.sb-logo-t{font-family:var(--fd);font-size:30px;letter-spacing:3px;line-height:1}
+.sb-logo-t span{color:var(--accent)}
+.sb-logo-s{font-size:9px;font-family:var(--fm);letter-spacing:3px;color:var(--t3);margin-top:3px;text-transform:uppercase}
+.sb-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+.sb-sec{font-size:9px;font-family:var(--fm);letter-spacing:2px;text-transform:uppercase;color:var(--t4);padding:10px 10px 5px}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--t2);border:1px solid transparent;transition:all .15s;white-space:nowrap}
+.ni:hover{background:var(--s2);color:var(--text)}
+.ni.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(249,115,22,.2)}
+.ni-ic{width:18px;text-align:center;font-size:16px;flex-shrink:0}
+.ni-badge{margin-left:auto;background:var(--accent);color:#000;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;font-family:var(--fm)}
+.sb-foot{padding:14px;border-top:1px solid var(--border)}
+.uc{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:var(--s2)}
+.av{width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#000;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--s1);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.page-title{font-family:var(--fd);font-size:26px;letter-spacing:2px}
+.tb-right{display:flex;align-items:center;gap:10px}
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;font-family:var(--fb);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-p{background:var(--accent);color:#000}.btn-p:hover{background:#ea6c0a;transform:translateY(-1px)}
+.btn-g{background:var(--s2);color:var(--t2);border:1px solid var(--border)}.btn-g:hover{background:var(--s3);color:var(--text)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}.btn-red:hover{background:rgba(239,68,68,.2)}
+.view{display:none}.view.active{display:block}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.card-title{font-family:var(--fd);font-size:18px;letter-spacing:1px}
+.stats-row{display:grid;gap:14px;margin-bottom:22px}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden;transition:transform .15s}
+.sc:hover{transform:translateY(-2px)}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc.o::after{background:var(--accent)}.sc.g::after{background:var(--green)}.sc.b::after{background:var(--blue)}.sc.r::after{background:var(--red)}.sc.pu::after{background:var(--purple)}
+.sc-lbl{font-size:9px;font-family:var(--fm);letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.sc-val{font-family:var(--fd);font-size:30px;letter-spacing:1px;line-height:1}
+.sc-sub{font-size:11px;color:var(--t3);margin-top:5px;font-family:var(--fm)}
+.sc-ico{position:absolute;top:16px;right:16px;font-size:26px;opacity:.1}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:8px 14px;font-size:9px;font-family:var(--fm);letter-spacing:2px;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--border);background:var(--s2);white-space:nowrap}
+thead th:first-child{border-radius:7px 0 0 7px}thead th:last-child{border-radius:0 7px 7px 0}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
+tbody tr:hover{background:var(--s2)}
+td{padding:11px 14px;vertical-align:middle}
+.cn{font-weight:600;font-size:13px}.cs{font-size:11px;color:var(--t3);margin-top:1px}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--fm);white-space:nowrap}
+.b-new{background:var(--blue-dim);color:var(--blue)}.b-active{background:var(--green-dim);color:var(--green)}
+.b-won{background:var(--green-dim);color:var(--green)}.b-lost{background:var(--red-dim);color:var(--red)}
+.b-proposal{background:rgba(245,158,11,.12);color:var(--gold)}.b-neg{background:rgba(249,115,22,.12);color:var(--accent)}
+.b-paid{background:var(--green-dim);color:var(--green)}.b-pending{background:rgba(245,158,11,.12);color:var(--gold)}
+.b-overdue{background:var(--red-dim);color:var(--red)}.b-complete{background:var(--green-dim);color:var(--green)}
+.b-progress{background:rgba(249,115,22,.12);color:var(--accent)}.b-unpaid{background:var(--red-dim);color:var(--red)}
+.b-cat{background:var(--blue-dim);color:var(--blue)}
+.profit-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-family:var(--fm);font-size:11px;font-weight:600}
+.profit-high{background:var(--green-dim);color:var(--green)}.profit-med{background:rgba(245,158,11,.12);color:var(--gold)}.profit-low{background:var(--red-dim);color:var(--red)}
+.vat-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px}
+.vat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px}
+.vat-row.total{border-top:1px solid var(--border);margin-top:6px;padding-top:10px;font-weight:700;font-size:14px}
+.vat-label{color:var(--t2)}.vat-val{font-family:var(--fm)}
+.vat-val.exc{color:var(--text)}.vat-val.vat{color:var(--gold)}.vat-val.inc{color:var(--accent)}
+.vat-inline{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:6px;padding:8px 12px;background:var(--s3);border-radius:6px;font-family:var(--fm)}
+.vi-item{display:flex;gap:5px;align-items:center}.vi-lbl{color:var(--t3)}.vi-val{font-weight:600}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.mo.open{display:flex}
+.md{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:28px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:su .2s ease}
+.md-wide{width:680px}
+@keyframes su{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.md-title{font-family:var(--fd);font-size:26px;letter-spacing:2px;margin-bottom:22px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:9px;font-family:var(--fm);letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
+.fi,.fs,.fta{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;transition:border-color .15s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--accent)}
+.fs option{background:var(--s2)}.fta{resize:vertical;min-height:70px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.md-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+.vat-helper{background:var(--accent-dim);border:1px solid rgba(249,115,22,.2);border-radius:8px;padding:10px 13px;margin-top:8px;font-size:12px;color:var(--t2);font-family:var(--fm)}
+.vat-helper span{color:var(--accent);font-weight:600}
+.search-wrap{display:flex;gap:10px;margin-bottom:18px}
+.search-in{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;transition:border-color .15s}
+.search-in:focus{border-color:var(--accent)}.search-in::placeholder{color:var(--t3)}
+.tabs{display:flex;gap:2px;background:var(--s2);padding:4px;border-radius:9px;margin-bottom:18px;border:1px solid var(--border);flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);transition:all .15s;border:none;background:none;font-family:var(--fb)}
+.tab.active{background:var(--s1);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.tab:hover:not(.active){color:var(--text)}
+.profit-summary{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:18px}
+.ps-title{font-family:var(--fd);font-size:20px;letter-spacing:1px;margin-bottom:6px}
+.ps-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.ps-item{background:var(--s1);border-radius:8px;padding:12px;border:1px solid var(--border)}
+.ps-lbl{font-size:9px;font-family:var(--fm);letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
+.ps-val{font-family:var(--fd);font-size:22px;letter-spacing:1px}
+.ps-bar-wrap{margin-top:10px}
+.ps-bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px;font-family:var(--fm)}
+.ps-bar-track{height:10px;background:var(--s3);border-radius:5px;overflow:hidden}
+.ps-bar-fill{height:100%;border-radius:5px;transition:width 1s ease}
+.ic-row{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:8px;background:var(--s2);border:1px solid var(--border);margin-bottom:8px;transition:all .15s}
+.ic-row:hover{border-color:var(--border2)}
+.ic-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ic-desc{font-size:13px;font-weight:500}.ic-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.ic-del{background:var(--red-dim);border:1px solid rgba(239,68,68,.2);color:var(--red);cursor:pointer;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;margin-left:8px;flex-shrink:0;font-family:var(--fb)}
+
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:12px}
+.file-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.file-card:hover{border-color:var(--accent);background:var(--accent-dim)}
+.file-ico{font-size:32px;margin-bottom:8px}.file-name{font-size:11px;font-weight:600;word-break:break-all;color:var(--t2)}
+.file-size{font-size:10px;color:var(--t3);margin-top:3px;font-family:var(--fm)}
+.file-del{position:absolute;top:6px;right:6px;background:var(--red-dim);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:4px;width:20px;height:20px;cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center}
+.file-card:hover .file-del{display:flex}
+.file-drop{border:2px dashed var(--border2);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:16px;display:block}
+.file-drop:hover,.file-drop.drag{border-color:var(--accent);background:var(--accent-dim)}
+.note-list{display:flex;flex-direction:column;gap:8px}
+.note-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;transition:border-color .15s}
+.note-card:hover{border-color:var(--border2)}
+.nc-del{position:absolute;top:10px;right:10px;background:var(--red-dim);border:1px solid rgba(239,68,68,.2);color:var(--red);cursor:pointer;font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;font-family:var(--fb)}
+
+.nc-title{font-weight:600;font-size:13px;margin-bottom:4px}
+.nc-body{font-size:12px;color:var(--t2);line-height:1.6;white-space:pre-wrap}
+.nc-meta{font-size:10px;color:var(--t3);margin-top:8px;font-family:var(--fm)}
+.job-summary-row{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer;border-radius:6px}
+.job-summary-row:hover{background:var(--s2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;margin-bottom:16px;padding:5px 0;border:none;background:none;font-family:var(--fb);transition:color .15s}
+.back-btn:hover{color:var(--accent)}
+.empty{text-align:center;padding:40px 20px;color:var(--t3)}
+.empty-ico{font-size:36px;margin-bottom:10px;opacity:.4}
+.empty-t{font-size:14px;font-weight:500;margin-bottom:4px;color:var(--t2)}
+.empty-s{font-size:12px}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--s2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;z-index:999;opacity:0;pointer-events:none;transition:all .3s;transform:translateX(10px)}
+.toast.show{opacity:1;pointer-events:auto;transform:translateX(0)}
+.toast.err{border-left-color:var(--red)}
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--t3);font-family:var(--fm);font-size:13px;gap:10px}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ── SETUP SCREEN ── */
+.setup-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);flex-direction:column;gap:0}
+.setup-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:40px;width:520px;max-width:95vw}
+.setup-title{font-family:var(--fd);font-size:38px;letter-spacing:3px;margin-bottom:4px}
+.setup-title span{color:var(--accent)}
+.setup-sub{font-size:13px;color:var(--t2);margin-bottom:28px;line-height:1.6}
+.setup-hint{font-size:11px;color:var(--t3);margin-top:20px;line-height:1.7;font-family:var(--fm)}
+.setup-hint a{color:var(--accent);text-decoration:none}
+</style>
 </head>
-<body style="font-family: Arial; padding:20px;">
+<body>
 
-<h1>Woodstone CRM</h1>
+<!-- ═══════════════════════════════════════
+     SETUP SCREEN (shown until Supabase configured)
+═══════════════════════════════════════ -->
+<div id="setupScreen" class="setup-screen" style="display:none;width:100%">
+  <div class="setup-card">
+    <div class="setup-title">BUILD<span>FLOW</span></div>
+    <div class="setup-sub">Enter your Supabase credentials to get started. You only need to do this once — they'll be saved in your browser.</div>
+    <div class="fg"><label class="fl">Supabase Project URL</label><input class="fi" id="setup_url" placeholder="https://xxxxxxxxxxxx.supabase.co"></div>
+    <div class="fg"><label class="fl">Supabase Anon (Public) Key</label><input class="fi" id="setup_key" placeholder="eyJhbGc..."></div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="saveSetup()">Connect to Supabase →</button>
+    <div class="setup-hint">
+      Get these from your Supabase project:<br>
+      <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard</a> → Your Project → Settings → API<br><br>
+      After connecting, run the SQL setup script in Supabase → SQL Editor.<br>
+      (The script will be shown after you connect.)
+    </div>
+  </div>
+</div>
 
-<input id="jobName" placeholder="Job Name">
-<input id="clientName" placeholder="Client">
-<input id="price" placeholder="Sell Price (ex VAT)">
-<button onclick="addJob()">Add Job</button>
+<!-- ═══════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════ -->
+<div id="appShell" style="display:none;width:100%;height:100%">
 
-<h2>Jobs</h2>
-<div id="jobs"></div>
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-t">BUILD<span>FLOW</span></div>
+    <div class="sb-logo-s">CRM · Portugal</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Main</div>
+    <div class="ni active" onclick="nav('dashboard',this)"><span class="ni-ic">📊</span>Dashboard</div>
+    <div class="ni" onclick="nav('clients',this)"><span class="ni-ic">👥</span>Clients<span class="ni-badge" id="clientBadge">0</span></div>
+    <div class="ni" onclick="nav('jobs',this)"><span class="ni-ic">🏗️</span>Jobs<span class="ni-badge" id="jobBadge">0</span></div>
+    <div class="sb-sec">Finance</div>
+    <div class="ni" onclick="nav('invoices',this)"><span class="ni-ic">📄</span>Invoices</div>
+    <div class="ni" onclick="nav('costs',this)"><span class="ni-ic">💸</span>Costs</div>
+    <div class="sb-sec">Other</div>
+    <div class="ni" onclick="nav('expenses',this)"><span class="ni-ic">🧾</span>Expenses</div>
+    <div class="ni" onclick="nav('notes',this)"><span class="ni-ic">📋</span>Notes</div>
+    <div class="sb-sec">Settings</div>
+    <div class="ni" onclick="nav('settings',this)"><span class="ni-ic">⚙️</span>Settings</div>
+  </nav>
+  <div class="sb-foot">
+    <div class="uc">
+      <div class="av" id="userAv">BF</div>
+      <div><div style="font-size:12px;font-weight:600" id="userName">BuildFlow</div><div style="font-size:10px;color:var(--t3)">CRM</div></div>
+    </div>
+  </div>
+</aside>
 
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">DASHBOARD</div>
+    <div class="tb-right">
+      <button class="btn btn-g" onclick="openModal('addClientModal')">+ Client</button>
+      <button class="btn btn-p" onclick="openModal('addJobModal')">+ New Job</button>
+    </div>
+  </div>
+
+  <div class="content" id="mainContent">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div id="dashStats" class="stats-row" style="grid-template-columns:repeat(5,1fr)"></div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title">ALL JOBS — PROFIT OVERVIEW</div>
+          <div style="font-size:11px;color:var(--t3);font-family:var(--fm)">All values exc. VAT (23%)</div>
+        </div>
+        <div style="display:flex;gap:0;padding:6px 12px;border-bottom:1px solid var(--border);font-size:9px;font-family:var(--fm);letter-spacing:2px;color:var(--t3);text-transform:uppercase">
+          <div style="flex:0 0 200px">Project</div><div style="flex:0 0 140px">Client</div><div style="flex:0 0 100px">Status</div>
+          <div style="flex:0 0 110px;text-align:right">Revenue (exc)</div><div style="flex:0 0 110px;text-align:right">Costs (exc)</div>
+          <div style="flex:0 0 110px;text-align:right">Profit (exc)</div><div style="flex:0 0 90px;text-align:right">Margin</div>
+          <div style="flex:1;margin-left:16px">Progress</div>
+        </div>
+        <div id="dashJobList"></div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="view" id="view-clients">
+      <div class="search-wrap">
+        <input class="search-in" placeholder="🔍  Search clients…" oninput="renderClients(this.value)">
+        <button class="btn btn-p" onclick="openModal('addClientModal')">+ Add Client</button>
+      </div>
+      <div class="card"><div class="tbl-wrap">
+        <table><thead><tr><th>Name / Company</th><th>Phone</th><th>Email</th><th>Location</th><th>NIF</th><th>Jobs</th><th>Revenue</th><th></th></tr></thead>
+        <tbody id="clientsTable"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- JOBS LIST -->
+    <div class="view" id="view-jobs">
+      <div class="search-wrap">
+        <input class="search-in" placeholder="🔍  Search jobs…" oninput="renderJobs(this.value)">
+        <button class="btn btn-p" onclick="openModal('addJobModal')">+ New Job</button>
+      </div>
+      <div class="card"><div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Job</th><th>Client</th><th>Status</th>
+          <th>Revenue (exc VAT)</th><th>VAT (23%)</th><th>Total (inc VAT)</th>
+          <th>Costs (exc)</th><th>Profit (exc)</th><th>Margin</th><th></th>
+        </tr></thead>
+        <tbody id="jobsTable"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- JOB DETAIL -->
+    <div class="view" id="view-jobdetail"><div id="jobDetailContent"></div></div>
+
+    <!-- INVOICES -->
+    <div class="view" id="view-invoices">
+      <div id="invoiceStats" class="stats-row" style="grid-template-columns:repeat(4,1fr)"></div>
+      <div class="search-wrap">
+        <input class="search-in" placeholder="🔍  Search invoices…" oninput="renderInvoices(this.value)">
+        <button class="btn btn-p" onclick="openModal('addInvoiceModal')">+ Add Invoice</button>
+      </div>
+      <div class="card"><div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Invoice #</th><th>Job</th><th>Description</th>
+          <th>Exc VAT</th><th>VAT (23%)</th><th>Inc VAT</th><th>Date</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="invoicesTable"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- COSTS -->
+    <div class="view" id="view-costs">
+      <div id="costStats" class="stats-row" style="grid-template-columns:repeat(4,1fr)"></div>
+      <div class="search-wrap">
+        <input class="search-in" placeholder="🔍  Search costs…" oninput="renderCosts(this.value)">
+        <button class="btn btn-p" onclick="openModal('addCostModal')">+ Add Cost</button>
+      </div>
+      <div class="card"><div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Description</th><th>Job</th><th>Category</th><th>Supplier</th>
+          <th>Exc VAT</th><th>VAT (23%)</th><th>Inc VAT</th><th>Date</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="costsTable"></tbody></table>
+      </div></div>
+    </div>
+
+    <!-- EXPENSES -->
+    <div class="view" id="view-expenses">
+      <div id="expenseStats" class="stats-row" style="grid-template-columns:repeat(4,1fr)"></div>
+      <div class="search-wrap">
+        <input class="search-in" placeholder="🔍  Search expenses…" oninput="renderExpenses(this.value)">
+        <button class="btn btn-p" onclick="openModal('addExpenseModal')">+ Add Expense</button>
+      </div>
+      <div id="expensesTableWrap"><div id="expensesTable"></div></div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="view" id="view-notes">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn btn-p" onclick="openModal('addNoteModal')">+ Add Note</button>
+      </div>
+      <div id="notesGrid" class="note-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="card" style="max-width:520px">
+        <div class="card-title" style="margin-bottom:20px">SUPABASE CONNECTION</div>
+        <div class="fg"><label class="fl">Project URL</label><input class="fi" id="set_url" placeholder="https://xxxx.supabase.co"></div>
+        <div class="fg"><label class="fl">Anon Key</label><input class="fi" id="set_key" placeholder="eyJhbGc..."></div>
+        <button class="btn btn-p" onclick="updateSettings()">Save & Reconnect</button>
+        <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:20px">
+          <div class="card-title" style="margin-bottom:16px">DATABASE SETUP SQL</div>
+          <div style="font-size:12px;color:var(--t2);margin-bottom:12px;line-height:1.6">Copy and run this in Supabase → SQL Editor → New Query. Only needed once when setting up a new project.</div>
+          <pre id="sqlBlock" style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--fm);font-size:11px;color:var(--t2);overflow-x:auto;white-space:pre;line-height:1.6"></pre>
+          <button class="btn btn-g" style="margin-top:10px" onclick="copySql()">Copy SQL</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div><!-- /appShell -->
+
+<!-- ═══════════════════════════════════════  MODALS  ═══════════════════════════════════════ -->
+
+<!-- ADD CLIENT -->
+<div class="mo" id="addClientModal">
+  <div class="md">
+    <div class="md-title">ADD CLIENT</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">First Name</label><input class="fi" id="c_fname" placeholder="João"></div>
+      <div class="fg"><label class="fl">Last Name</label><input class="fi" id="c_lname" placeholder="Silva"></div>
+    </div>
+    <div class="fg"><label class="fl">Company (optional)</label><input class="fi" id="c_company" placeholder="Silva Construções Lda"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Phone</label><input class="fi" id="c_phone" placeholder="+351 912 345 678"></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="c_email" placeholder="joao@email.pt"></div>
+    </div>
+    <div class="fg"><label class="fl">Location / Address</label><input class="fi" id="c_location" placeholder="Loulé, Algarve"></div>
+    <div class="fg"><label class="fl">NIF (Tax Number)</label><input class="fi" id="c_nif" placeholder="123456789"></div>
+    <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="c_notes" placeholder="Initial contact details…"></textarea></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('addClientModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD JOB -->
+<div class="mo" id="addJobModal">
+  <div class="md md-wide">
+    <div class="md-title">NEW JOB</div>
+    <div class="fg"><label class="fl">Job Name</label><input class="fi" id="j_name" placeholder="Kitchen Renovation — Vila do Bispo"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Client</label><select class="fs" id="j_client"><option value="">— Select Client —</option></select></div>
+      <div class="fg"><label class="fl">Status</label><select class="fs" id="j_status">
+        <option>Lead</option><option>Qualified</option><option>Proposal Sent</option><option>In Progress</option><option>Complete</option><option>Lost</option>
+      </select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Job Type</label><select class="fs" id="j_type">
+        <option>Renovation</option><option>New Build</option><option>Extension</option><option>Commercial Fitout</option><option>Bathroom</option><option>Kitchen</option><option>Other</option>
+      </select></div>
+      <div class="fg"><label class="fl">Start Date</label><input class="fi" type="date" id="j_start"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Contract Value (exc. VAT) — €</label>
+      <input class="fi" id="j_value" type="number" placeholder="0.00" oninput="showVat('j_value','j_vat_helper','jv_e','jv_v','jv_i')">
+      <div class="vat-helper" id="j_vat_helper" style="display:none">Exc: <span id="jv_e"></span> + VAT 23%: <span id="jv_v"></span> = Inc: <span id="jv_i"></span></div>
+    </div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fta" id="j_desc" placeholder="Scope of works…"></textarea></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('addJobModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveJob()">Create Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD INVOICE (global) -->
+<div class="mo" id="addInvoiceModal">
+  <div class="md">
+    <div class="md-title">ADD INVOICE</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Invoice Number</label><input class="fi" id="inv_num" placeholder="INV-2026-001"></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="inv_date"></div>
+    </div>
+    <div class="fg"><label class="fl">Job</label><select class="fs" id="inv_job"><option value="">— Select Job —</option></select></div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="inv_desc" placeholder="Progress payment #1"></div>
+    <div class="fg">
+      <label class="fl">Amount exc. VAT — €</label>
+      <input class="fi" id="inv_exc" type="number" placeholder="0.00" oninput="showVat('inv_exc','inv_vat_h','iv_e','iv_v','iv_i')">
+      <div class="vat-helper" id="inv_vat_h" style="display:none">Exc: <span id="iv_e"></span> + VAT 23%: <span id="iv_v"></span> = Inc: <span id="iv_i"></span></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label><select class="fs" id="inv_status"><option>Pending</option><option>Paid</option><option>Overdue</option></select></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('addInvoiceModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD COST (global) -->
+<div class="mo" id="addCostModal">
+  <div class="md">
+    <div class="md-title">ADD COST</div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="co_desc" placeholder="Electrical subcontractor — phase 1"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Job</label><select class="fs" id="co_job"><option value="">— Select Job —</option></select></div>
+      <div class="fg"><label class="fl">Category</label><select class="fs" id="co_cat">
+        <option>Labour</option><option>Materials</option><option>Subcontractor</option><option>Plant Hire</option><option>Professional Fees</option><option>Social Segurança</option><option>Other</option>
+      </select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Supplier</label><input class="fi" id="co_supplier" placeholder="Supplier name"></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="co_date"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Amount exc. VAT — €</label>
+      <input class="fi" id="co_exc" type="number" placeholder="0.00" oninput="showVat('co_exc','co_vat_h','cv_e','cv_v','cv_i')">
+      <div class="vat-helper" id="co_vat_h" style="display:none">Exc: <span id="cv_e"></span> + VAT 23%: <span id="cv_v"></span> = Inc: <span id="cv_i"></span></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label><select class="fs" id="co_status"><option>Unpaid</option><option>Paid</option></select></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('addCostModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveCost()">Save Cost</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD NOTE -->
+<div class="mo" id="addNoteModal">
+  <div class="md">
+    <div class="md-title">ADD NOTE</div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="nt_title" placeholder="Site visit — March 2026"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Linked Job (optional)</label><select class="fs" id="nt_job"><option value="">— None —</option></select></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="nt_date"></div>
+    </div>
+    <div class="fg"><label class="fl">Note</label><textarea class="fta" style="min-height:120px" id="nt_body" placeholder="Write your note here…"></textarea></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('addNoteModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD EXPENSE -->
+<div class="mo" id="addExpenseModal">
+  <div class="md">
+    <div class="md-title">ADD EXPENSE</div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="ex_desc" placeholder="e.g. Fuel — site visits March"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Category</label><select class="fs" id="ex_cat">
+        <optgroup label="Business Overheads">
+          <option>Tool Purchase</option>
+          <option>Fuel</option>
+          <option>Insurance</option>
+          <option>Vehicle</option>
+          <option>Office</option>
+          <option>Phone & Internet</option>
+          <option>Accounting</option>
+          <option>Other</option>
+        </optgroup>
+        <optgroup label="Advertising">
+          <option>Social Media Ads</option>
+          <option>Google Ads</option>
+          <option>Print & Flyers</option>
+          <option>Website</option>
+          <option>Signage</option>
+          <option>Photography & Video</option>
+          <option>Advertising Other</option>
+        </optgroup>
+        <optgroup label="Dan's Expenses">
+          <option>Restaurant & Entertainment</option>
+          <option>Client Meals</option>
+          <option>Travel</option>
+          <option>Accommodation</option>
+          <option>Dan's Other</option>
+        </optgroup>
+      </select></div>
+      <div class="fg"><label class="fl">Supplier / Payee</label><input class="fi" id="ex_supplier" placeholder="e.g. BP, Leroy Merlin"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Amount exc. VAT — €</label>
+      <input class="fi" id="ex_exc" type="number" placeholder="0.00" oninput="showVat('ex_exc','ex_vat_h','exe','exv','exi')">
+      <div class="vat-helper" id="ex_vat_h" style="display:none">Exc: <span id="exe"></span> + VAT 23%: <span id="exv"></span> = Inc: <span id="exi"></span></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="ex_date"></div>
+      <div class="fg"><label class="fl">Status</label><select class="fs" id="ex_status"><option>Unpaid</option><option>Paid</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input class="fi" id="ex_notes" placeholder="Optional notes…"></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('addExpenseModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveExpense()">Save Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOB: ADD VARIATION -->
+<div class="mo" id="jobVariationModal">
+  <div class="md">
+    <div class="md-title">ADD VARIATION / EXTRA</div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="jv_desc" placeholder="e.g. Additional bathroom tiling — client request"></div>
+    <div class="fg">
+      <label class="fl">Amount exc. VAT — €</label>
+      <input class="fi" id="jv_exc" type="number" placeholder="0.00" oninput="showVat('jv_exc','jv_vat_h','jve','jvv','jvi')">
+      <div class="vat-helper" id="jv_vat_h" style="display:none">Exc: <span id="jve"></span> + VAT 23%: <span id="jvv"></span> = Inc: <span id="jvi"></span></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Date Agreed</label><input class="fi" type="date" id="jv_date"></div>
+      <div class="fg"><label class="fl">Status</label><select class="fs" id="jv_status">
+        <option>Pending</option><option>Approved</option><option>Rejected</option>
+      </select></div>
+    </div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('jobVariationModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveVariation()">Add Variation</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOB: ADD INVOICE -->
+<div class="mo" id="jobInvModal">
+  <div class="md">
+    <div class="md-title">ADD INVOICE</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Invoice Number</label><input class="fi" id="ji_num" placeholder="INV-2026-001"></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="ji_date"></div>
+    </div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="ji_desc" placeholder="Progress payment #1"></div>
+    <div class="fg">
+      <label class="fl">Amount exc. VAT — €</label>
+      <input class="fi" id="ji_exc" type="number" placeholder="0.00" oninput="showVat('ji_exc','ji_vat_h','jie','jiv','jii')">
+      <div class="vat-helper" id="ji_vat_h" style="display:none">Exc: <span id="jie"></span> + VAT 23%: <span id="jiv"></span> = Inc: <span id="jii"></span></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label><select class="fs" id="ji_status"><option>Pending</option><option>Paid</option><option>Overdue</option></select></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('jobInvModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveJobInvoice()">Add Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOB: ADD COST -->
+<div class="mo" id="jobCostModal">
+  <div class="md">
+    <div class="md-title">ADD COST</div>
+    <div class="fg"><label class="fl">Description</label><input class="fi" id="jc_desc" placeholder="Plumbing works — phase 1"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Category</label><select class="fs" id="jc_cat">
+        <option>Labour</option><option>Materials</option><option>Subcontractor</option><option>Plant Hire</option><option>Professional Fees</option><option>Social Segurança</option><option>Other</option>
+      </select></div>
+      <div class="fg"><label class="fl">Supplier</label><input class="fi" id="jc_supplier" placeholder="Supplier name"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Amount exc. VAT — €</label>
+      <input class="fi" id="jc_exc" type="number" placeholder="0.00" oninput="showVat('jc_exc','jc_vat_h','jce','jcv','jci')">
+      <div class="vat-helper" id="jc_vat_h" style="display:none">Exc: <span id="jce"></span> + VAT 23%: <span id="jcv"></span> = Inc: <span id="jci"></span></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="jc_date"></div>
+      <div class="fg"><label class="fl">Status</label><select class="fs" id="jc_status"><option>Unpaid</option><option>Paid</option></select></div>
+    </div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('jobCostModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveJobCost()">Add Cost</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOB: ADD NOTE -->
+<div class="mo" id="jobNoteModal">
+  <div class="md">
+    <div class="md-title">ADD NOTE</div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="jn_title" placeholder="Site visit notes…"></div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="jn_date"></div>
+    <div class="fg"><label class="fl">Note</label><textarea class="fta" style="min-height:120px" id="jn_body" placeholder="Write your note here…"></textarea></div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('jobNoteModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveJobNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- JOB: ADD LABOUR -->
+<div class="mo" id="jobLabourModal">
+  <div class="md">
+    <div class="md-title">ADD LABOUR</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Worker / Subcontractor Name</label><input class="fi" id="jl_name" placeholder="João Silva"></div>
+      <div class="fg"><label class="fl">Role</label><input class="fi" id="jl_role" placeholder="Electrician, Tiler, Carpenter…"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Day Rate (exc VAT) — €</label><input class="fi" id="jl_rate" type="number" placeholder="0.00" oninput="calcLabourTotal()"></div>
+      <div class="fg"><label class="fl">Number of Days</label><input class="fi" id="jl_days" type="number" placeholder="0" oninput="calcLabourTotal()"></div>
+    </div>
+    <div class="vat-helper" id="jl_total_preview" style="display:none"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Start Date</label><input class="fi" type="date" id="jl_start"></div>
+      <div class="fg"><label class="fl">End Date</label><input class="fi" type="date" id="jl_end"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Status</label><select class="fs" id="jl_status"><option>Unpaid</option><option>Paid</option></select></div>
+      <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" id="jl_notes" placeholder="Any additional notes…"></div>
+    </div>
+    <div class="md-foot">
+      <button class="btn btn-g" onclick="closeModal('jobLabourModal')">Cancel</button>
+      <button class="btn btn-p" onclick="saveJobLabour()">Add Labour</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════  SCRIPT  ═══════════════════════════════════════ -->
 <script>
+const VAT = 0.23;
+const SQL_SETUP = `-- BuildFlow CRM — run once in Supabase SQL Editor
 
-// 🔴 YOU WILL REPLACE THESE NEXT STEP
-const supabaseUrl = "https://rjgvpbuflezpfcgniezo.supabase.co"
-const supabaseKey = "sb_publishable_scxePgZ6Yh4a4GPSEttI1g_TBUD9u0m"
+create table if not exists clients (
+  id uuid primary key default gen_random_uuid(),
+  first_name text, last_name text, company text,
+  phone text, email text, location text, nif text, notes text,
+  created_at timestamptz default now()
+);
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+create table if not exists jobs (
+  id uuid primary key default gen_random_uuid(),
+  name text not null, client_id uuid references clients(id),
+  status text default 'Lead', job_type text, start_date date,
+  contract_value numeric default 0, description text,
+  created_at timestamptz default now()
+);
 
-async function addJob() {
-  const name = document.getElementById("jobName").value;
-  const client = document.getElementById("clientName").value;
-  const price = document.getElementById("price").value;
+create table if not exists invoices (
+  id uuid primary key default gen_random_uuid(),
+  job_id uuid references jobs(id) on delete cascade,
+  invoice_number text, description text,
+  exc_vat numeric default 0, date date, status text default 'Pending',
+  created_at timestamptz default now()
+);
 
-  await supabase.from("jobs").insert([
-    { project_name: name, client_name: client, sell_price_ex_vat: price }
+create table if not exists costs (
+  id uuid primary key default gen_random_uuid(),
+  job_id uuid references jobs(id) on delete cascade,
+  description text, category text, supplier text,
+  exc_vat numeric default 0, date date, status text default 'Unpaid',
+  created_at timestamptz default now()
+);
+
+create table if not exists notes (
+  id uuid primary key default gen_random_uuid(),
+  job_id uuid references jobs(id) on delete cascade,
+  title text, body text, date date,
+  created_at timestamptz default now()
+);
+
+create table if not exists files (
+  id uuid primary key default gen_random_uuid(),
+  job_id uuid references jobs(id) on delete cascade,
+  name text, size bigint, storage_path text, mime_type text,
+  created_at timestamptz default now()
+);
+
+-- Storage bucket (run separately if needed)
+-- insert into storage.buckets (id, name, public) values ('job-files', 'job-files', true);
+
+-- Disable RLS for internal use (no login required)
+alter table clients disable row level security;
+alter table jobs disable row level security;
+alter table invoices disable row level security;
+alter table costs disable row level security;
+alter table notes disable row level security;
+alter table files disable row level security;
+
+create table if not exists expenses (
+  id uuid primary key default gen_random_uuid(),
+  description text, category text, supplier text,
+  exc_vat numeric default 0, date date, status text default 'Unpaid',
+  notes text, created_at timestamptz default now()
+);
+alter table expenses disable row level security;
+
+create table if not exists variations (
+  id uuid primary key default gen_random_uuid(),
+  job_id uuid references jobs(id) on delete cascade,
+  description text, exc_vat numeric default 0,
+  date date, status text default 'Pending',
+  created_at timestamptz default now()
+);
+alter table variations disable row level security;`;
+
+// ── SUPABASE INIT ──────────────────────────────
+let sb = null;
+let DB = { clients:[], jobs:[], invoices:[], costs:[], notes:[], files:[], labour:[] };
+let currentJobId = null;
+let currentJobTab = 'overview';
+
+function initSupabase(url, key) {
+  sb = supabase.createClient(url, key);
+}
+
+function saveSetup() {
+  const url = document.getElementById('setup_url').value.trim();
+  const key = document.getElementById('setup_key').value.trim();
+  if (!url || !key) { alert('Please enter both URL and key'); return; }
+  localStorage.setItem('bf_url', url);
+  localStorage.setItem('bf_key', key);
+  initSupabase(url, key);
+  startApp();
+}
+
+function updateSettings() {
+  const url = document.getElementById('set_url').value.trim();
+  const key = document.getElementById('set_key').value.trim();
+  if (!url || !key) { showToast('Please enter both fields','err'); return; }
+  localStorage.setItem('bf_url', url);
+  localStorage.setItem('bf_key', key);
+  initSupabase(url, key);
+  loadAll();
+  showToast('Settings saved — reconnected');
+}
+
+async function startApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'flex';
+  await loadAll();
+  // Force dashboard view active
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-dashboard').classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.querySelector('.ni').classList.add('active');
+  renderDashboard();
+}
+
+// ── DATA LOADING ──────────────────────────────
+async function loadAll() {
+  if (!sb) return;
+  const [c,j,i,co,n,f,ex,va] = await Promise.all([
+    sb.from('clients').select('*').order('created_at'),
+    sb.from('jobs').select('*').order('created_at'),
+    sb.from('invoices').select('*').order('created_at'),
+    sb.from('costs').select('*').order('created_at'),
+    sb.from('notes').select('*').order('created_at'),
+    sb.from('files').select('*').order('created_at'),
+    sb.from('expenses').select('*').order('created_at'),
+    sb.from('variations').select('*').order('created_at'),
   ]);
-
-  loadJobs();
+  DB.clients = c.data || [];
+  DB.jobs = j.data || [];
+  DB.invoices = i.data || [];
+  DB.costs = co.data || [];
+  DB.notes = n.data || [];
+  DB.files = f.data || [];
+  DB.expenses = ex.data || [];
+  DB.variations = va.data || [];
+  updateBadges();
 }
 
-async function loadJobs() {
-  const { data } = await supabase.from("jobs").select("*");
+// ── UTILS ──────────────────────────────────────
+const fmt = v => '€' + Number(v||0).toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtPct = v => (isNaN(v)||!isFinite(v)) ? '0%' : Math.round(v)+'%';
 
-  const container = document.getElementById("jobs");
-  container.innerHTML = "";
+function clientName(c) { return c ? (c.company || `${c.first_name||''} ${c.last_name||''}`.trim()) : '—'; }
+function getClient(id) { return DB.clients.find(c=>c.id===id); }
+function getJob(id) { return DB.jobs.find(j=>j.id===id); }
 
-  data.forEach(job => {
-    container.innerHTML += `<p>${job.project_name} - ${job.client_name} - €${job.sell_price_ex_vat}</p>`;
-  });
+function jobFinancials(jobId) {
+  const rev = DB.invoices.filter(i=>i.job_id===jobId).reduce((a,i)=>a+(i.exc_vat||0),0);
+  const costExc = DB.costs.filter(c=>c.job_id===jobId).reduce((a,c)=>a+(c.exc_vat||0),0);
+  const labourExc = DB.labour.filter(l=>l.job_id===jobId).reduce((a,l)=>a+(l.total_exc_vat||0),0);
+  const cost = costExc + labourExc;
+  const profit = rev - cost;
+  const margin = rev>0 ? (profit/rev)*100 : 0;
+  return {rev, cost, costExc, labourExc, profit, margin};
 }
 
-loadJobs();
+function profitClass(m) { return m>=25?'profit-high':m>=10?'profit-med':'profit-low'; }
+function barColor(m) { return m>=25?'var(--green)':m>=10?'var(--gold)':'var(--red)'; }
 
+function statusBadge(s) {
+  const map = {
+    'Lead':'b-new','Qualified':'b-new','Proposal Sent':'b-proposal',
+    'In Progress':'b-progress','Complete':'b-complete','Lost':'b-lost',
+    'Paid':'b-paid','Pending':'b-pending','Overdue':'b-overdue',
+    'Unpaid':'b-unpaid','Active':'b-active'
+  };
+  return `<span class="badge ${map[s]||'b-new'}">${(s||'').toUpperCase()}</span>`;
+}
+
+function fileIcon(name='') {
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  if(['jpg','jpeg','png','gif','webp'].includes(ext)) return '🖼️';
+  if(ext==='pdf') return '📄';
+  if(['doc','docx'].includes(ext)) return '📝';
+  if(['xls','xlsx'].includes(ext)) return '📊';
+  return '📁';
+}
+
+function showVat(inId,helpId,eId,vId,iId) {
+  const v=parseFloat(document.getElementById(inId).value)||0;
+  const h=document.getElementById(helpId);
+  h.style.display=v>0?'block':'none';
+  if(v>0){
+    document.getElementById(eId).textContent=fmt(v);
+    document.getElementById(vId).textContent=fmt(v*VAT);
+    document.getElementById(iId).textContent=fmt(v*(1+VAT));
+  }
+}
+
+function updateBadges() {
+  document.getElementById('clientBadge').textContent = DB.clients.length;
+  document.getElementById('jobBadge').textContent = DB.jobs.length;
+}
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+// ── NAVIGATION ────────────────────────────────
+function nav(page, el) {
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+page).classList.add('active');
+  const titles={dashboard:'DASHBOARD',clients:'CLIENTS',jobs:'JOBS',invoices:'INVOICES',costs:'COSTS',expenses:'EXPENSES',notes:'NOTES',settings:'SETTINGS',jobdetail:'JOB DETAIL'};
+  document.getElementById('pageTitle').textContent=titles[page]||page.toUpperCase();
+  const renders={dashboard:renderDashboard,clients:renderClients,jobs:renderJobs,invoices:renderInvoices,costs:renderCosts,notes:renderNotes,expenses:renderExpenses};
+  if(renders[page]) renders[page]();
+  if(page==='settings') renderSettings();
+  if(page!=='jobdetail') populateSelects();
+}
+
+function populateSelects() {
+  const jOpts = '<option value="">— Select Job —</option>' + DB.jobs.map(j=>`<option value="${j.id}">${j.name}</option>`).join('');
+  const cOpts = '<option value="">— Select Client —</option>' + DB.clients.map(c=>`<option value="${c.id}">${clientName(c)}</option>`).join('');
+  ['inv_job','co_job','nt_job'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=jOpts; });
+  ['j_client'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=cOpts; });
+}
+
+// ── MODAL ─────────────────────────────────────
+function openModal(id) { populateSelects(); document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+// ── TOAST ─────────────────────────────────────
+function showToast(msg,type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=(type==='err'?'⚠️ ':'✓ ')+msg;
+  t.className='toast show'+(type==='err'?' err':'');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── DASHBOARD ─────────────────────────────────
+function renderDashboard() {
+  const totalRev = DB.invoices.reduce((a,i)=>a+(i.exc_vat||0),0);
+  const totalCost = DB.costs.reduce((a,c)=>a+(c.exc_vat||0),0);
+  const totalProfit = totalRev-totalCost;
+  const avgMargin = totalRev>0?(totalProfit/totalRev)*100:0;
+  const activeJobs = DB.jobs.filter(j=>j.status==='In Progress').length;
+  const outstanding = DB.invoices.filter(i=>i.status==='Pending'||i.status==='Overdue').reduce((a,i)=>a+(i.exc_vat||0)*(1+VAT),0);
+
+  const totalExpenses=(DB.expenses||[]).reduce((a,e)=>a+(e.exc_vat||0),0);
+  const netProfit=totalProfit-totalExpenses;
+  document.getElementById('dashStats').innerHTML=`
+    <div class="sc o"><div class="sc-lbl">Total Revenue (exc VAT)</div><div class="sc-val">${fmt(totalRev)}</div><div class="sc-sub">VAT: ${fmt(totalRev*VAT)}</div><div class="sc-ico">💶</div></div>
+    <div class="sc r"><div class="sc-lbl">Job Costs (exc VAT)</div><div class="sc-val">${fmt(totalCost)}</div><div class="sc-sub">Expenses: ${fmt(totalExpenses)}</div><div class="sc-ico">💸</div></div>
+    <div class="sc g"><div class="sc-lbl">Gross Profit (exc VAT)</div><div class="sc-val">${fmt(totalProfit)}</div><div class="sc-sub">Margin: ${fmtPct(avgMargin)}</div><div class="sc-ico">📈</div></div>
+    <div class="sc b"><div class="sc-lbl">Net Profit (after expenses)</div><div class="sc-val" style="color:${netProfit>=0?'var(--green)':'var(--red)'}">${fmt(netProfit)}</div><div class="sc-sub">Overheads: ${fmt(totalExpenses)}</div><div class="sc-ico">🏦</div></div>
+    <div class="sc pu"><div class="sc-lbl">Outstanding (inc VAT)</div><div class="sc-val">${fmt(outstanding)}</div><div class="sc-sub">Unpaid invoices</div><div class="sc-ico">⚠️</div></div>`;
+
+  if(!DB.jobs.length) {
+    document.getElementById('dashJobList').innerHTML=`<div class="empty"><div class="empty-ico">🏗️</div><div class="empty-t">No jobs yet</div><div class="empty-s">Click + New Job to get started</div></div>`;
+    return;
+  }
+  document.getElementById('dashJobList').innerHTML = DB.jobs.map(j=>{
+    const f=jobFinancials(j.id); const c=getClient(j.client_id);
+    const pct=Math.max(0,Math.min(100,f.margin));
+    return `<div class="job-summary-row" onclick="openJobDetail('${j.id}')">
+      <div style="flex:0 0 200px"><div style="font-weight:600;font-size:13px">${j.name}</div><div style="font-size:10px;color:var(--t3);font-family:var(--fm);margin-top:2px">${j.job_type||''}</div></div>
+      <div style="flex:0 0 140px;font-size:12px;color:var(--t2)">${c?clientName(c):'—'}</div>
+      <div style="flex:0 0 100px">${statusBadge(j.status)}</div>
+      <div style="flex:0 0 110px;font-family:var(--fm);font-size:12px;text-align:right">${fmt(f.rev)}</div>
+      <div style="flex:0 0 110px;font-family:var(--fm);font-size:12px;color:var(--red);text-align:right">${fmt(f.cost)}</div>
+      <div style="flex:0 0 110px;font-family:var(--fm);font-size:12px;color:${f.profit>=0?'var(--green)':'var(--red)'};text-align:right">${fmt(f.profit)}</div>
+      <div style="flex:0 0 90px;text-align:right"><span class="profit-pill ${profitClass(f.margin)}">${fmtPct(f.margin)}</span></div>
+      <div style="flex:1;margin:0 16px"><div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;border-radius:3px;background:${barColor(f.margin)};transition:width .8s ease"></div></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── CLIENTS ───────────────────────────────────
+function renderClients(q='') {
+  const list=DB.clients.filter(c=>!q||clientName(c).toLowerCase().includes(q.toLowerCase())||c.email?.toLowerCase().includes(q.toLowerCase()));
+  if(!list.length){document.getElementById('clientsTable').innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-ico">👥</div><div class="empty-t">No clients found</div></div></td></tr>`;return;}
+  document.getElementById('clientsTable').innerHTML=list.map(c=>{
+    const jobs=DB.jobs.filter(j=>j.client_id===c.id);
+    const rev=jobs.reduce((a,j)=>a+(jobFinancials(j.id).rev),0);
+    return `<tr>
+      <td><div class="cn">${clientName(c)}</div>${c.company&&c.first_name?`<div class="cs">${c.first_name} ${c.last_name}</div>`:''}</td>
+      <td style="font-family:var(--fm);font-size:11px">${c.phone||'—'}</td>
+      <td style="font-size:12px;color:var(--t2)">${c.email||'—'}</td>
+      <td style="font-size:12px;color:var(--t2)">${c.location||'—'}</td>
+      <td style="font-family:var(--fm);font-size:11px;color:var(--t3)">${c.nif||'—'}</td>
+      <td style="font-family:var(--fm);text-align:center">${jobs.length}</td>
+      <td style="font-family:var(--fm);color:var(--accent)">${fmt(rev)}</td>
+      <td style="display:flex;gap:6px"><button class="btn btn-g btn-sm" onclick="event.stopPropagation();editClient('${c.id}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="event.stopPropagation();delClient('${c.id}')">🗑 Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveClient() {
+  const fn=v('c_fname'),ln=v('c_lname'),co=v('c_company');
+  if(!fn&&!ln&&!co){showToast('Enter a name or company','err');return;}
+  const {error}=await sb.from('clients').insert([{first_name:fn,last_name:ln,company:co,phone:v('c_phone'),email:v('c_email'),location:v('c_location'),nif:v('c_nif'),notes:v('c_notes')}]);
+  if(error){showToast('Error: '+error.message,'err');return;}
+  showToast('Client saved'); closeModal('addClientModal');
+  ['c_fname','c_lname','c_company','c_phone','c_email','c_location','c_nif','c_notes'].forEach(clearField);
+  await loadAll(); renderClients();
+}
+
+async function delClient(id) {
+  if(!confirm('Delete this client?')) return;
+  await sb.from('clients').delete().eq('id',id);
+  showToast('Client removed'); await loadAll(); renderClients();
+}
+
+// ── JOBS ──────────────────────────────────────
+async function delJob(id) {
+  if(!confirm("Delete this job? All invoices, costs, notes and files for this job will also be deleted.")) return;
+  await sb.from("invoices").delete().eq("job_id",id);
+  await sb.from("costs").delete().eq("job_id",id);
+  await sb.from("notes").delete().eq("job_id",id);
+  await sb.from("files").delete().eq("job_id",id);
+  await sb.from("jobs").delete().eq("id",id);
+  showToast("Job deleted"); await loadAll(); renderJobs();
+}
+function renderJobs(q='') {
+  const list=DB.jobs.filter(j=>!q||j.name.toLowerCase().includes(q.toLowerCase()));
+  if(!list.length){document.getElementById('jobsTable').innerHTML=`<tr><td colspan="10"><div class="empty"><div class="empty-ico">🏗️</div><div class="empty-t">No jobs found</div></div></td></tr>`;return;}
+  document.getElementById('jobsTable').innerHTML=list.map(j=>{
+    const f=jobFinancials(j.id); const c=getClient(j.client_id);
+    return `<tr onclick="openJobDetail('${j.id}')">
+      <td><div class="cn">${j.name}</div><div class="cs">${j.job_type||''}</div></td>
+      <td>${c?clientName(c):'—'}</td>
+      <td>${statusBadge(j.status)}</td>
+      <td style="font-family:var(--fm)">${fmt(f.rev)}</td>
+      <td style="font-family:var(--fm);color:var(--gold)">${fmt(f.rev*VAT)}</td>
+      <td style="font-family:var(--fm);color:var(--accent)">${fmt(f.rev*(1+VAT))}</td>
+      <td style="font-family:var(--fm);color:var(--red)">${fmt(f.cost)}</td>
+      <td style="font-family:var(--fm);color:${f.profit>=0?'var(--green)':'var(--red)'}">${fmt(f.profit)}</td>
+      <td><span class="profit-pill ${profitClass(f.margin)}">${fmtPct(f.margin)}</span></td>
+      <td style="display:flex;gap:4px"><button class="btn btn-p btn-sm" onclick="event.stopPropagation();openJobDetail('${j.id}')">Open</button><button class="btn btn-g btn-sm" onclick="event.stopPropagation();editJob('${j.id}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="event.stopPropagation();delJob('${j.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveJob() {
+  const name=v('j_name'); if(!name){showToast('Job name required','err');return;}
+  const {error}=await sb.from('jobs').insert([{name,client_id:v('j_client')||null,status:v('j_status'),job_type:v('j_type'),start_date:v('j_start')||null,contract_value:parseFloat(v('j_value'))||0,description:v('j_desc')}]);
+  if(error){showToast('Error: '+error.message,'err');return;}
+  showToast('Job created'); closeModal('addJobModal');
+  ['j_name','j_start','j_value','j_desc'].forEach(clearField);
+  document.getElementById('j_vat_helper').style.display='none';
+  await loadAll(); renderDashboard();
+}
+
+// ── JOB DETAIL ────────────────────────────────
+function openJobDetail(jobId) {
+  currentJobId=jobId; currentJobTab='overview';
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-jobdetail').classList.add('active');
+  document.getElementById('pageTitle').textContent='JOB DETAIL';
+  renderJobDetail();
+}
+
+function renderJobDetail() {
+  const j=getJob(currentJobId); if(!j) return;
+  const c=getClient(j.client_id);
+  const f=jobFinancials(currentJobId);
+  const invs=DB.invoices.filter(i=>i.job_id===currentJobId);
+  const costs=DB.costs.filter(co=>co.job_id===currentJobId);
+  const notes=DB.notes.filter(n=>n.job_id===currentJobId);
+  const files=DB.files.filter(fi=>fi.job_id===currentJobId);
+
+  const tabs=['overview','invoices','costs','variations','files','notes'];
+  const labour=DB.labour.filter(l=>l.job_id===currentJobId);
+  const vars=DB.variations.filter(v=>v.job_id===currentJobId);
+  const labourCount=costs.filter(c=>c.category==='Labour').length;
+  const socialCount=costs.filter(c=>c.category==='Social Segurança').length;
+  const subconCount=costs.filter(c=>c.category==='Subcontractor').length;
+  const otherCount=costs.filter(c=>!['Labour','Social Segurança','Subcontractor'].includes(c.category)).length;
+  const tabLabels={overview:'Overview',invoices:`Invoices (${invs.length})`,costs:`Costs (${otherCount}) · Labour (${labourCount}) · Sub (${subconCount}) · SS (${socialCount})`,variations:`Variations (${vars.length})`,files:`Files (${files.length})`,notes:`Notes (${notes.length})`};
+
+  let tabContent='';
+  if(currentJobTab==='overview') tabContent=renderOverviewTab(j,c,f);
+  if(currentJobTab==='invoices') tabContent=renderInvTab(invs,f);
+  if(currentJobTab==='costs') tabContent=renderCostTab(costs,f);
+  if(currentJobTab==='labour') tabContent=renderLabourTab(DB.labour.filter(l=>l.job_id===currentJobId));
+  if(currentJobTab==='files') tabContent=renderFilesTab(files);
+  if(currentJobTab==='notes') tabContent=renderNotesTab(notes);
+  if(currentJobTab==='variations') tabContent=renderVariationsTab(DB.variations.filter(v=>v.job_id===currentJobId), j);
+
+  document.getElementById('jobDetailContent').innerHTML=`
+    <button class="back-btn" onclick="nav('jobs',null)">← Back to Jobs</button>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-family:var(--fd);font-size:36px;letter-spacing:2px">${j.name}</h2>
+        <div style="font-size:13px;color:var(--t2);margin-top:4px">${c?clientName(c):'—'} · ${j.job_type||''} · Started ${j.start_date||'TBC'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${statusBadge(j.status)}
+        <span class="profit-pill ${profitClass(f.margin)}" style="font-size:14px;padding:6px 14px">${fmtPct(f.margin)} margin</span>
+        <button class="btn btn-g btn-sm" onclick="editJob('${j.id}')">✏️ Edit Job</button>
+      </div>
+    </div>
+    <div class="tabs">
+      ${tabs.map(t=>`<button class="tab${currentJobTab===t?' active':''}" onclick="switchJobTab('${t}')">${tabLabels[t]}</button>`).join('')}
+    </div>
+    <div id="jobTabContent">${tabContent}</div>`;
+}
+
+function switchJobTab(t) { currentJobTab=t; renderJobDetail(); }
+
+function renderOverviewTab(j,c,f) {
+  const revVat=f.rev*VAT, costVat=f.cost*VAT, cv=j.contract_value||0;
+  return `
+    <div class="profit-summary">
+      <div class="ps-title">PROFIT TRACKER</div>
+      <div style="font-size:11px;color:var(--t3);font-family:var(--fm);margin-bottom:12px">All profit calculations exc. VAT · 23% shown separately for tax purposes</div>
+      <div class="ps-grid">
+        <div class="ps-item"><div class="ps-lbl">Revenue (exc VAT)</div><div class="ps-val" style="color:var(--green)">${fmt(f.rev)}</div></div>
+        <div class="ps-item"><div class="ps-lbl">Total Costs (exc VAT)</div><div class="ps-val" style="color:var(--red)">${fmt(f.cost)}</div></div>
+        <div class="ps-item"><div class="ps-lbl">Profit (exc VAT)</div><div class="ps-val" style="color:${f.profit>=0?'var(--green)':'var(--red)'}">${fmt(f.profit)}</div></div>
+      </div>
+      <div class="ps-bar-wrap">
+        <div class="ps-bar-lbl"><span>Profit Margin (exc VAT)</span><span style="color:${barColor(f.margin)}">${fmtPct(f.margin)}</span></div>
+        <div class="ps-bar-track"><div class="ps-bar-fill" style="width:${Math.max(0,Math.min(100,f.margin))}%;background:${barColor(f.margin)}"></div></div>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-hd"><div class="card-title">REVENUE BREAKDOWN</div></div>
+        <div class="vat-box">
+          <div class="vat-row"><span class="vat-label">Works Value (exc VAT)</span><span class="vat-val exc">${fmt(f.rev)}</span></div>
+          <div class="vat-row"><span class="vat-label">VAT @ 23%</span><span class="vat-val vat">${fmt(revVat)}</span></div>
+          <div class="vat-row total"><span class="vat-label">Total Invoiced (inc VAT)</span><span class="vat-val inc">${fmt(f.rev+revVat)}</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-title">COST BREAKDOWN</div></div>
+        <div class="vat-box">
+          <div class="vat-row"><span class="vat-label">Total Costs (exc VAT)</span><span class="vat-val exc">${fmt(f.cost)}</span></div>
+          <div class="vat-row"><span class="vat-label">VAT @ 23%</span><span class="vat-val vat">${fmt(costVat)}</span></div>
+          <div class="vat-row total"><span class="vat-label">Total Costs (inc VAT)</span><span class="vat-val inc">${fmt(f.cost+costVat)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">JOB DETAILS</div></div>
+      <div class="g2">
+        <div>
+          <div style="margin-bottom:12px"><div class="fl">Client</div><div style="font-size:14px;font-weight:600">${c?clientName(c):'—'}</div>${c?.nif?`<div style="font-size:11px;color:var(--t3);font-family:var(--fm)">NIF: ${c.nif}</div>`:''}</div>
+          <div style="margin-bottom:12px"><div class="fl">Type</div><div>${j.job_type||'—'}</div></div>
+          <div><div class="fl">Start Date</div><div>${j.start_date||'—'}</div></div>
+        </div>
+        <div>
+          <div style="margin-bottom:12px"><div class="fl">Status</div>${statusBadge(j.status)}</div>
+          <div style="margin-bottom:12px">
+            <div class="fl">Contract Value</div>
+            <div class="vat-inline">
+              <div class="vi-item"><span class="vi-lbl">Exc:</span><span class="vi-val">${fmt(cv)}</span></div>
+              <div class="vi-item"><span class="vi-lbl">VAT:</span><span class="vi-val" style="color:var(--gold)">${fmt(cv*VAT)}</span></div>
+              <div class="vi-item"><span class="vi-lbl">Inc:</span><span class="vi-val" style="color:var(--accent)">${fmt(cv*(1+VAT))}</span></div>
+            </div>
+          </div>
+          <div><div class="fl">Description</div><div style="font-size:13px;color:var(--t2);line-height:1.5">${j.description||'—'}</div></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderInvTab(invs,f) {
+  const total=invs.reduce((a,i)=>a+(i.exc_vat||0),0);
+  const rows=invs.length?invs.map(i=>`
+    <div class="ic-row">
+      <div class="ic-dot" style="background:${i.status==='Paid'?'var(--green)':i.status==='Overdue'?'var(--red)':'var(--gold)'}"></div>
+      <div style="flex:1">
+        <div class="ic-desc">${i.description||''} <span style="font-family:var(--fm);font-size:11px;color:var(--t3)">${i.invoice_number||''}</span></div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:4px;padding:6px 10px;background:var(--s3);border-radius:6px;font-family:var(--fm)">
+          <div><span style="color:var(--t3)">Exc VAT: </span><span style="font-weight:600">${fmt(i.exc_vat)}</span></div>
+          <div><span style="color:var(--t3)">VAT 23%: </span><span style="font-weight:600;color:var(--gold)">${fmt((i.exc_vat||0)*VAT)}</span></div>
+          <div><span style="color:var(--t3)">Inc VAT: </span><span style="font-weight:600;color:var(--accent)">${fmt((i.exc_vat||0)*(1+VAT))}</span></div>
+        </div>
+        <div class="ic-sub">${i.date||''} · ${statusBadge(i.status)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0"><button class="ic-del" onclick="editInvoice('${i.id}')">✏️ Edit</button><button class="ic-del" onclick="delInvoice('${i.id}')">🗑 Delete</button></div>
+    </div>`).join('') : `<div class="empty"><div class="empty-ico">📄</div><div class="empty-t">No invoices yet</div></div>`;
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div style="font-size:13px;color:var(--t2)">Total invoiced (exc VAT): <span style="color:var(--green);font-family:var(--fm)">${fmt(total)}</span>
+      <span style="color:var(--t3);margin-left:12px;font-size:11px">VAT: ${fmt(total*VAT)}</span>
+      <span style="color:var(--accent);margin-left:12px">Inc: ${fmt(total*(1+VAT))}</span></div>
+    <button class="btn btn-p" onclick="openModal('jobInvModal')">+ Add Invoice</button></div>${rows}`;
+}
+
+function renderCostTab(costs,f) {
+  const labour = costs.filter(c=>c.category==='Labour');
+  const social = costs.filter(c=>c.category==='Social Segurança');
+  const subcon = costs.filter(c=>c.category==='Subcontractor');
+  const other = costs.filter(c=>!['Labour','Social Segurança','Subcontractor'].includes(c.category));
+  const labourTotal = labour.reduce((a,c)=>a+(c.exc_vat||0),0);
+  const socialTotal = social.reduce((a,c)=>a+(c.exc_vat||0),0);
+  const subconTotal = subcon.reduce((a,c)=>a+(c.exc_vat||0),0);
+  const otherTotal = other.reduce((a,c)=>a+(c.exc_vat||0),0);
+  const total = labourTotal + socialTotal + subconTotal + otherTotal;
+
+  function costRow(c) {
+    return `<div class="ic-row">
+      <div class="ic-dot" style="background:${c.status==='Paid'?'var(--green)':'var(--red)'}"></div>
+      <div style="flex:1">
+        <div class="ic-desc">${c.description||''} <span class="badge b-cat">${c.category||''}</span></div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:4px;padding:6px 10px;background:var(--s3);border-radius:6px;font-family:var(--fm)">
+          <div><span style="color:var(--t3)">Exc VAT: </span><span style="font-weight:600">${fmt(c.exc_vat)}</span></div>
+          <div><span style="color:var(--t3)">VAT 23%: </span><span style="font-weight:600;color:var(--gold)">${fmt((c.exc_vat||0)*VAT)}</span></div>
+          <div><span style="color:var(--t3)">Inc VAT: </span><span style="font-weight:600;color:var(--accent)">${fmt((c.exc_vat||0)*(1+VAT))}</span></div>
+        </div>
+        <div class="ic-sub">${c.supplier||''} · ${c.date||''} · ${statusBadge(c.status)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0"><button class="ic-del" onclick="editCost('${c.id}')">✏️ Edit</button><button class="ic-del" onclick="delCost('${c.id}')">🗑 Delete</button></div>
+    </div>`;
+  }
+
+  function sectionHeader(label, color, subtotal, vatExempt=false) {
+    return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:10px 14px;background:var(--s3);border-radius:8px;border-left:3px solid ${color}">
+      <div style="font-family:var(--fd);font-size:16px;letter-spacing:1px;color:${color}">${label}</div>
+      <div style="font-family:var(--fm);font-size:13px">
+        ${vatExempt
+          ? `<span style="color:var(--t3)">Subtotal: </span><span style="color:var(--text);font-weight:600">${fmt(subtotal)}</span>
+             <span style="background:var(--green-dim);color:var(--green);font-size:10px;padding:2px 8px;border-radius:20px;margin-left:12px;font-weight:700">VAT EXEMPT</span>`
+          : `<span style="color:var(--t3)">Subtotal exc VAT: </span><span style="color:var(--text);font-weight:600">${fmt(subtotal)}</span>
+             <span style="color:var(--t3);margin-left:12px">VAT: </span><span style="color:var(--gold);font-weight:600">${fmt(subtotal*VAT)}</span>
+             <span style="color:var(--t3);margin-left:12px">Inc: </span><span style="color:var(--accent);font-weight:600">${fmt(subtotal*(1+VAT))}</span>`
+        }
+      </div>
+    </div>`;
+  }
+
+  const labourSection = `<div style="margin-bottom:20px">
+    ${sectionHeader('LABOUR','var(--blue)',labourTotal)}
+    ${labour.length ? labour.map(costRow).join('') : '<div style="font-size:12px;color:var(--t3);padding:10px 14px">No labour costs added yet</div>'}
+  </div>`;
+
+  const subconSection = `<div style="margin-bottom:20px">
+    ${sectionHeader('SUBCONTRACTORS','var(--accent)',subconTotal)}
+    ${subcon.length ? subcon.map(costRow).join('') : '<div style="font-size:12px;color:var(--t3);padding:10px 14px">No subcontractor costs added yet</div>'}
+  </div>`;
+
+  const socialSection = `<div style="margin-bottom:20px">
+    ${sectionHeader('SOCIAL SEGURANÇA','var(--green)',socialTotal,true)}
+    ${social.length ? social.map(costRow).join('') : '<div style="font-size:12px;color:var(--t3);padding:10px 14px">No Social Segurança entries yet</div>'}
+  </div>`;
+
+  const otherSection = `<div style="margin-bottom:20px">
+    ${sectionHeader('MATERIALS & OTHER COSTS','var(--purple)',otherTotal)}
+    ${other.length ? other.map(costRow).join('') : '<div style="font-size:12px;color:var(--t3);padding:10px 14px">No other costs added yet</div>'}
+  </div>`;
+
+  const vatableCosts = labourTotal + subconTotal + otherTotal;
+  const combinedTotal = `
+    <div style="padding:14px 18px;background:var(--s2);border:1px solid var(--border);border-radius:8px;">
+      <div style="font-family:var(--fd);font-size:18px;letter-spacing:1px;margin-bottom:10px">TOTAL ALL COSTS</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;font-family:var(--fm);font-size:13px;margin-bottom:10px">
+        <div><span style="color:var(--t3)">Labour: </span><span style="font-weight:600">${fmt(labourTotal)}</span></div>
+        <div><span style="color:var(--t3)">Subcontractors: </span><span style="font-weight:600">${fmt(subconTotal)}</span></div>
+        <div><span style="color:var(--t3)">Materials & Other: </span><span style="font-weight:600">${fmt(otherTotal)}</span></div>
+        <div><span style="color:var(--t3)">VAT @ 23%: </span><span style="color:var(--gold);font-weight:600">${fmt(vatableCosts*VAT)}</span></div>
+        <div><span style="color:var(--t3)">Social Segurança (no VAT): </span><span style="color:var(--green);font-weight:600">${fmt(socialTotal)}</span></div>
+      </div>
+      <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:12px;color:var(--t3);font-family:var(--fm)">Combined total inc VAT (excl. Social Segurança — VAT exempt)</div>
+        <div style="font-family:var(--fd);font-size:24px;color:var(--red)">${fmt(vatableCosts*(1+VAT)+socialTotal)}</div>
+      </div>
+    </div>`;
+
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div style="font-size:13px;color:var(--t2)">Total costs (exc VAT): <span style="color:var(--red);font-family:var(--fm)">${fmt(total)}</span></div>
+    <button class="btn btn-p" onclick="openModal('jobCostModal')">+ Add Cost</button>
+  </div>
+  ${costs.length===0?'<div class="empty"><div class="empty-ico">💸</div><div class="empty-t">No costs yet</div></div>':labourSection+subconSection+socialSection+otherSection+combinedTotal}`;
+}
+
+function renderLabourTab(labourItems) {
+  const total = labourItems.reduce((a,l)=>a+(l.total_exc_vat||0),0);
+  const rows = labourItems.length ? labourItems.map(l=>`
+    <div class="ic-row">
+      <div class="ic-dot" style="background:${l.status==='Paid'?'var(--green)':'var(--red)'}"></div>
+      <div style="flex:1">
+        <div class="ic-desc">${l.worker_name||''} <span class="badge b-cat">${l.role||''}</span></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:4px;padding:6px 10px;background:var(--s3);border-radius:6px;font-family:var(--fm)">
+          <div><span style="color:var(--t3)">Days: </span><span style="font-weight:600">${l.days||0}</span></div>
+          <div><span style="color:var(--t3)">Rate/Day: </span><span style="font-weight:600">${fmt(l.day_rate||0)}</span></div>
+          <div><span style="color:var(--t3)">Total (exc VAT): </span><span style="font-weight:600;color:var(--green)">${fmt(l.total_exc_vat||0)}</span></div>
+          <div><span style="color:var(--t3)">VAT 23%: </span><span style="font-weight:600;color:var(--gold)">${fmt((l.total_exc_vat||0)*VAT)}</span></div>
+          <div><span style="color:var(--t3)">Inc VAT: </span><span style="font-weight:600;color:var(--accent)">${fmt((l.total_exc_vat||0)*(1+VAT))}</span></div>
+        </div>
+        <div class="ic-sub">${l.start_date||''} ${l.end_date?'→ '+l.end_date:''} · ${statusBadge(l.status||'Unpaid')}</div>
+        ${l.notes?`<div style="font-size:11px;color:var(--t3);margin-top:4px">${l.notes}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+        <button class="ic-del" onclick="editLabour('${l.id}')">✏️ Edit</button>
+        <button class="ic-del" onclick="delLabour('${l.id}')">🗑 Delete</button>
+      </div>
+    </div>`).join('') : `<div class="empty"><div class="empty-ico">👷</div><div class="empty-t">No labour entries yet</div></div>`;
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div style="font-size:13px;color:var(--t2)">Total labour (exc VAT): <span style="color:var(--green);font-family:var(--fm)">${fmt(total)}</span>
+      <span style="color:var(--t3);margin-left:12px;font-size:11px">VAT: ${fmt(total*VAT)}</span>
+      <span style="color:var(--accent);margin-left:12px">Inc: ${fmt(total*(1+VAT))}</span></div>
+    <button class="btn btn-p" onclick="openModal('jobLabourModal')">+ Add Labour</button></div>${rows}`;
+}
+
+
+function renderFilesTab(files) {
+  const cards=files.length?`<div class="file-grid">${files.map(f=>`
+    <div class="file-card" onclick="openFile('${f.storage_path}')">
+      <button class="file-del" onclick="event.stopPropagation();delFile('${f.id}','${f.storage_path}')">✕</button>
+      <div class="file-ico">${fileIcon(f.name)}</div>
+      <div class="file-name">${f.name}</div>
+      <div class="file-size">${f.size<1048576?Math.round(f.size/1024)+' KB':(f.size/1048576).toFixed(1)+' MB'}</div>
+    </div>`).join('')}</div>`:`<div class="empty"><div class="empty-ico">📁</div><div class="empty-t">No files yet</div></div>`;
+  return `<label class="file-drop" id="fileDrop" for="fileInput" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+    <input type="file" id="fileInput" multiple style="display:none" onchange="uploadFiles(this.files)">
+    <div style="font-size:28px;margin-bottom:8px">📎</div>
+    <div style="font-size:13px;color:var(--t2);font-weight:500">Drop files here or click to upload</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:4px">PDFs, photos, documents — any format</div>
+  </label>${cards}`;
+}
+
+function renderNotesTab(notes) {
+  const rows=notes.length?notes.map(n=>`
+    <div class="note-card">
+      <div style="display:flex;gap:4px;position:absolute;top:10px;right:10px"><button class="nc-del" style="position:static" onclick="editNote('${n.id}')">✏️</button><button class="nc-del" style="position:static" onclick="delNote('${n.id}')">🗑</button></div>
+      <div class="nc-title">${n.title||''}</div>
+      <div class="nc-body">${n.body||''}</div>
+      <div class="nc-meta">${n.date||''}</div>
+    </div>`).join('') : `<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">No notes yet</div></div>`;
+  return `<div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+    <button class="btn btn-p" onclick="openModal('jobNoteModal')">+ Add Note</button></div>
+  <div class="note-list">${rows}</div>`;
+}
+
+// ── JOB INVOICES / COSTS / NOTES ─────────────
+async function saveJobInvoice() {
+  const exc=parseFloat(v('ji_exc'))||0;
+  if(!exc){showToast('Amount required','err');return;}
+  await sb.from('invoices').insert([{job_id:currentJobId,invoice_number:v('ji_num')||'INV-'+Date.now(),description:v('ji_desc'),exc_vat:exc,date:v('ji_date')||null,status:v('ji_status')}]);
+  showToast('Invoice added'); closeModal('jobInvModal');
+  ['ji_num','ji_desc','ji_exc','ji_date'].forEach(clearField);
+  document.getElementById('ji_vat_h').style.display='none';
+  await loadAll(); currentJobTab='invoices'; renderJobDetail();
+}
+
+async function saveJobCost() {
+  const exc=parseFloat(v('jc_exc'))||0;
+  if(!exc){showToast('Amount required','err');return;}
+  await sb.from('costs').insert([{job_id:currentJobId,description:v('jc_desc'),category:v('jc_cat'),supplier:v('jc_supplier'),exc_vat:exc,date:v('jc_date')||null,status:v('jc_status')}]);
+  showToast('Cost added'); closeModal('jobCostModal');
+  ['jc_desc','jc_supplier','jc_exc','jc_date'].forEach(clearField);
+  document.getElementById('jc_vat_h').style.display='none';
+  await loadAll(); currentJobTab='costs'; renderJobDetail();
+}
+
+async function saveJobNote() {
+  if(!v('jn_title')){showToast('Title required','err');return;}
+  await sb.from('notes').insert([{job_id:currentJobId,title:v('jn_title'),body:v('jn_body'),date:v('jn_date')||todayStr()}]);
+  showToast('Note saved'); closeModal('jobNoteModal');
+  ['jn_title','jn_body','jn_date'].forEach(clearField);
+  await loadAll(); currentJobTab='notes'; renderJobDetail();
+}
+
+async function delInvoice(id) {
+  await sb.from('invoices').delete().eq('id',id);
+  showToast('Invoice removed'); await loadAll(); renderJobDetail();
+}
+async function delCost(id) {
+  await sb.from('costs').delete().eq('id',id);
+  showToast('Cost removed'); await loadAll(); renderJobDetail();
+}
+async function delNote(id) {
+  await sb.from('notes').delete().eq('id',id);
+  showToast('Note removed'); await loadAll(); renderJobDetail();
+}
+
+// ── FILE UPLOAD ───────────────────────────────
+async function uploadFiles(fileList) {
+  for(const file of Array.from(fileList)) {
+    const path=`${currentJobId}/${Date.now()}_${file.name}`;
+    const {error:upErr}=await sb.storage.from('job-files').upload(path,file);
+    if(upErr){showToast('Upload failed: '+upErr.message,'err');continue;}
+    await sb.from('files').insert([{job_id:currentJobId,name:file.name,size:file.size,storage_path:path,mime_type:file.type}]);
+  }
+  showToast('File(s) uploaded'); await loadAll(); currentJobTab='files'; renderJobDetail();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('fileDrop')?.classList.remove('drag');
+  uploadFiles(e.dataTransfer.files);
+}
+
+async function openFile(path) {
+  const {data}=sb.storage.from('job-files').getPublicUrl(path);
+  window.open(data.publicUrl,'_blank');
+}
+
+async function delFile(id,path) {
+  await sb.storage.from('job-files').remove([path]);
+  await sb.from('files').delete().eq('id',id);
+  showToast('File removed'); await loadAll(); currentJobTab='files'; renderJobDetail();
+}
+
+// ── GLOBAL INVOICES ───────────────────────────
+function renderInvoices(q='') {
+  const list=DB.invoices.filter(i=>!q||i.description?.toLowerCase().includes(q.toLowerCase())||i.invoice_number?.toLowerCase().includes(q.toLowerCase()));
+  const total=DB.invoices.reduce((a,i)=>a+(i.exc_vat||0),0);
+  const paid=DB.invoices.filter(i=>i.status==='Paid').reduce((a,i)=>a+(i.exc_vat||0),0);
+  const pend=DB.invoices.filter(i=>i.status==='Pending').reduce((a,i)=>a+(i.exc_vat||0),0);
+  const over=DB.invoices.filter(i=>i.status==='Overdue').reduce((a,i)=>a+(i.exc_vat||0),0);
+  document.getElementById('invoiceStats').innerHTML=`
+    <div class="sc g"><div class="sc-lbl">Total Invoiced (exc)</div><div class="sc-val">${fmt(total)}</div><div class="sc-sub">VAT: ${fmt(total*VAT)}</div></div>
+    <div class="sc g"><div class="sc-lbl">Paid (exc VAT)</div><div class="sc-val">${fmt(paid)}</div></div>
+    <div class="sc pu"><div class="sc-lbl">Pending (exc VAT)</div><div class="sc-val">${fmt(pend)}</div></div>
+    <div class="sc r"><div class="sc-lbl">Overdue (exc VAT)</div><div class="sc-val">${fmt(over)}</div></div>`;
+  if(!list.length){document.getElementById('invoicesTable').innerHTML=`<tr><td colspan="9"><div class="empty"><div class="empty-ico">📄</div><div class="empty-t">No invoices</div></div></td></tr>`;return;}
+  document.getElementById('invoicesTable').innerHTML=list.map(i=>{
+    const j=getJob(i.job_id);
+    return `<tr>
+      <td style="font-family:var(--fm);font-size:12px">${i.invoice_number||'—'}</td>
+      <td><div class="cn">${j?j.name:'—'}</div></td>
+      <td style="font-size:12px;color:var(--t2)">${i.description||''}</td>
+      <td style="font-family:var(--fm)">${fmt(i.exc_vat)}</td>
+      <td style="font-family:var(--fm);color:var(--gold)">${fmt((i.exc_vat||0)*VAT)}</td>
+      <td style="font-family:var(--fm);color:var(--accent)">${fmt((i.exc_vat||0)*(1+VAT))}</td>
+      <td style="font-size:11px;font-family:var(--fm);color:var(--t3)">${i.date||''}</td>
+      <td>${statusBadge(i.status)}</td>
+      <td style="display:flex;gap:4px"><button class="btn btn-g btn-sm" onclick="editInvoiceGlobal('${i.id}')">✏️</button><button class="btn btn-red btn-sm" onclick="delInvoiceGlobal('${i.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveInvoice() {
+  const exc=parseFloat(v('inv_exc'))||0;
+  if(!exc){showToast('Amount required','err');return;}
+  await sb.from('invoices').insert([{job_id:v('inv_job')||null,invoice_number:v('inv_num')||'INV-'+Date.now(),description:v('inv_desc'),exc_vat:exc,date:v('inv_date')||null,status:v('inv_status')}]);
+  showToast('Invoice saved'); closeModal('addInvoiceModal');
+  await loadAll(); renderInvoices();
+}
+
+async function delInvoiceGlobal(id) {
+  await sb.from('invoices').delete().eq('id',id);
+  showToast('Invoice removed'); await loadAll(); renderInvoices();
+}
+
+// ── GLOBAL COSTS ──────────────────────────────
+function renderCosts(q='') {
+  const list=DB.costs.filter(c=>!q||c.description?.toLowerCase().includes(q.toLowerCase())||c.supplier?.toLowerCase().includes(q.toLowerCase()));
+  const total=DB.costs.reduce((a,c)=>a+(c.exc_vat||0),0);
+  const totalVatable=DB.costs.filter(c=>c.category!=='Social Segurança').reduce((a,c)=>a+(c.exc_vat||0),0);
+  const paid=DB.costs.filter(c=>c.status==='Paid').reduce((a,c)=>a+(c.exc_vat||0),0);
+  const unpaid=DB.costs.filter(c=>c.status==='Unpaid').reduce((a,c)=>a+(c.exc_vat||0),0);
+  document.getElementById('costStats').innerHTML=`
+    <div class="sc r"><div class="sc-lbl">Total Costs (exc)</div><div class="sc-val">${fmt(total)}</div><div class="sc-sub">VAT (excl. SS): ${fmt(totalVatable*VAT)}</div></div>
+    <div class="sc g"><div class="sc-lbl">Paid (exc VAT)</div><div class="sc-val">${fmt(paid)}</div></div>
+    <div class="sc pu"><div class="sc-lbl">Unpaid (exc VAT)</div><div class="sc-val">${fmt(unpaid)}</div></div>
+    <div class="sc b"><div class="sc-lbl">Categories</div><div class="sc-val">${[...new Set(DB.costs.map(c=>c.category))].length}</div></div>`;
+  if(!list.length){document.getElementById('costsTable').innerHTML=`<tr><td colspan="10"><div class="empty"><div class="empty-ico">💸</div><div class="empty-t">No costs</div></div></td></tr>`;return;}
+  document.getElementById('costsTable').innerHTML=list.map(c=>{
+    const j=getJob(c.job_id);
+    const isSS = c.category==='Social Segurança';
+    const vatCell = isSS ? `<span class="badge" style="background:var(--green-dim);color:var(--green)">VAT EXEMPT</span>` : `<span style="font-family:var(--fm);color:var(--gold)">${fmt((c.exc_vat||0)*VAT)}</span>`;
+    const incCell = isSS ? `<span style="font-family:var(--fm);color:var(--green)">${fmt(c.exc_vat||0)}</span>` : `<span style="font-family:var(--fm);color:var(--accent)">${fmt((c.exc_vat||0)*(1+VAT))}</span>`;
+    return `<tr>
+      <td><div class="cn">${c.description||''}</div></td>
+      <td><div class="cn">${j?j.name:'—'}</div></td>
+      <td><span class="badge b-cat">${c.category||''}</span></td>
+      <td style="font-size:12px;color:var(--t2)">${c.supplier||''}</td>
+      <td style="font-family:var(--fm)">${fmt(c.exc_vat)}</td>
+      <td>${vatCell}</td>
+      <td>${incCell}</td>
+      <td style="font-size:11px;font-family:var(--fm);color:var(--t3)">${c.date||''}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td style="display:flex;gap:4px"><button class="btn btn-g btn-sm" onclick="editCostGlobal('${c.id}')">✏️</button><button class="btn btn-red btn-sm" onclick="delCostGlobal('${c.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveCost() {
+  const exc=parseFloat(v('co_exc'))||0;
+  if(!exc){showToast('Amount required','err');return;}
+  await sb.from('costs').insert([{job_id:v('co_job')||null,description:v('co_desc'),category:v('co_cat'),supplier:v('co_supplier'),exc_vat:exc,date:v('co_date')||null,status:v('co_status')}]);
+  showToast('Cost saved'); closeModal('addCostModal');
+  await loadAll(); renderCosts();
+}
+
+async function delCostGlobal(id) {
+  await sb.from('costs').delete().eq('id',id);
+  showToast('Cost removed'); await loadAll(); renderCosts();
+}
+
+// ── GLOBAL NOTES ──────────────────────────────
+function renderNotes() {
+  if(!DB.notes.length){document.getElementById('notesGrid').innerHTML=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">No notes yet</div></div>`;return;}
+  document.getElementById('notesGrid').innerHTML=DB.notes.map(n=>{
+    const j=n.job_id?getJob(n.job_id):null;
+    return `<div class="note-card">
+      <div style="display:flex;gap:4px;position:absolute;top:10px;right:10px"><button class="nc-del" style="position:static" onclick="editNoteGlobal('${n.id}')">✏️</button><button class="nc-del" style="position:static" onclick="delNoteGlobal('${n.id}')">🗑</button></div>
+      <div class="nc-title">${n.title||''}</div>
+      ${j?`<div style="font-size:11px;font-family:var(--fm);color:var(--accent);margin-bottom:6px">🏗️ ${j.name}</div>`:''}
+      <div class="nc-body">${n.body||''}</div>
+      <div class="nc-meta">${n.date||''}</div>
+    </div>`;
+  }).join('');
+}
+
+async function saveNote() {
+  if(!v('nt_title')){showToast('Title required','err');return;}
+  await sb.from('notes').insert([{job_id:v('nt_job')||null,title:v('nt_title'),body:v('nt_body'),date:v('nt_date')||todayStr()}]);
+  showToast('Note saved'); closeModal('addNoteModal');
+  ['nt_title','nt_body','nt_date'].forEach(clearField);
+  await loadAll(); renderNotes();
+}
+
+async function delNoteGlobal(id) {
+  await sb.from('notes').delete().eq('id',id);
+  showToast('Note removed'); await loadAll(); renderNotes();
+}
+
+// ── SETTINGS ──────────────────────────────────
+function renderSettings() {
+  document.getElementById('set_url').value=localStorage.getItem('bf_url')||'';
+  document.getElementById('set_key').value=localStorage.getItem('bf_key')||'';
+  document.getElementById('sqlBlock').textContent=SQL_SETUP;
+}
+
+function copySql() {
+  navigator.clipboard.writeText(SQL_SETUP).then(()=>showToast('SQL copied to clipboard'));
+}
+
+// ── HELPERS ───────────────────────────────────
+const v = id => (document.getElementById(id)||{}).value||'';
+const clearField = id => { const el=document.getElementById(id); if(el) el.value=''; };
+
+
+
+// ── LABOUR CRUD ───────────────────────────────
+async function saveJobLabour() {
+  const name=v('jl_name'), rate=parseFloat(v('jl_rate'))||0, days=parseFloat(v('jl_days'))||0;
+  if(!name){showToast('Worker name required','err');return;}
+  const total = rate * days;
+  await sb.from('labour').insert([{
+    job_id:currentJobId, worker_name:name, role:v('jl_role'),
+    day_rate:rate, days:days, total_exc_vat:total,
+    start_date:v('jl_start')||null, end_date:v('jl_end')||null,
+    status:v('jl_status'), notes:v('jl_notes')
+  }]);
+  showToast('Labour added'); closeModal('jobLabourModal');
+  ['jl_name','jl_role','jl_rate','jl_days','jl_start','jl_end','jl_notes'].forEach(clearField);
+  await loadAll(); currentJobTab='labour'; renderJobDetail();
+}
+
+async function delLabour(id) {
+  await sb.from('labour').delete().eq('id',id);
+  showToast('Labour entry removed'); await loadAll(); currentJobTab='labour'; renderJobDetail();
+}
+
+function editLabour(id) {
+  const l = DB.labour.find(x=>x.id===id);
+  if(!l) return;
+  document.getElementById('jl_name').value = l.worker_name||'';
+  document.getElementById('jl_role').value = l.role||'';
+  document.getElementById('jl_rate').value = l.day_rate||'';
+  document.getElementById('jl_days').value = l.days||'';
+  document.getElementById('jl_start').value = l.start_date||'';
+  document.getElementById('jl_end').value = l.end_date||'';
+  document.getElementById('jl_status').value = l.status||'Unpaid';
+  document.getElementById('jl_notes').value = l.notes||'';
+  calcLabourTotal();
+  const btn = document.querySelector('#jobLabourModal .btn-p');
+  btn.textContent = 'Update Labour';
+  btn.onclick = async () => {
+    const rate=parseFloat(v('jl_rate'))||0, days=parseFloat(v('jl_days'))||0;
+    await sb.from('labour').update({
+      worker_name:v('jl_name'), role:v('jl_role'), day_rate:rate, days:days,
+      total_exc_vat:rate*days, start_date:v('jl_start')||null,
+      end_date:v('jl_end')||null, status:v('jl_status'), notes:v('jl_notes')
+    }).eq('id', id);
+    showToast('Labour updated'); closeModal('jobLabourModal');
+    btn.textContent = 'Add Labour'; btn.onclick = saveJobLabour;
+    await loadAll(); currentJobTab='labour'; renderJobDetail();
+  };
+  openModal('jobLabourModal');
+}
+
+function calcLabourTotal() {
+  const rate=parseFloat(document.getElementById('jl_rate')?.value)||0;
+  const days=parseFloat(document.getElementById('jl_days')?.value)||0;
+  const total=rate*days;
+  const el=document.getElementById('jl_total_preview');
+  if(el) {
+    el.style.display=total>0?'block':'none';
+    el.innerHTML=`Total (exc VAT): <span>${fmt(total)}</span> &nbsp;+&nbsp; VAT 23%: <span>${fmt(total*VAT)}</span> &nbsp;=&nbsp; Inc VAT: <span>${fmt(total*(1+VAT))}</span>`;
+  }
+}
+
+// ── EDIT FUNCTIONS ────────────────────────────
+// Edit Job
+function editJob(id) {
+  const j = getJob(id);
+  if(!j) return;
+  populateSelects();
+  document.getElementById('j_name').value = j.name||'';
+  document.getElementById('j_client').value = j.client_id||'';
+  document.getElementById('j_status').value = j.status||'Lead';
+  document.getElementById('j_type').value = j.job_type||'Renovation';
+  document.getElementById('j_start').value = j.start_date||'';
+  document.getElementById('j_value').value = j.contract_value||'';
+  document.getElementById('j_desc').value = j.description||'';
+  showVat('j_value','j_vat_helper','jv_e','jv_v','jv_i');
+  const btn = document.querySelector('#addJobModal .btn-p');
+  btn.textContent = 'Update Job';
+  btn.onclick = async () => {
+    await sb.from('jobs').update({
+      name:v('j_name'), client_id:v('j_client')||null, status:v('j_status'),
+      job_type:v('j_type'), start_date:v('j_start')||null,
+      contract_value:parseFloat(v('j_value'))||0, description:v('j_desc')
+    }).eq('id', id);
+    showToast('Job updated');
+    closeModal('addJobModal');
+    btn.textContent = 'Create Job';
+    btn.onclick = saveJob;
+    document.getElementById('j_vat_helper').style.display='none';
+    await loadAll(); renderJobDetail();
+  };
+  openModal('addJobModal');
+}
+
+
+
+// Edit Client
+function editClient(id) {
+  const c = getClient(id);
+  if(!c) return;
+  document.getElementById('c_fname').value = c.first_name||'';
+  document.getElementById('c_lname').value = c.last_name||'';
+  document.getElementById('c_company').value = c.company||'';
+  document.getElementById('c_phone').value = c.phone||'';
+  document.getElementById('c_email').value = c.email||'';
+  document.getElementById('c_location').value = c.location||'';
+  document.getElementById('c_nif').value = c.nif||'';
+  document.getElementById('c_notes').value = c.notes||'';
+  // Change save button to update
+  const btn = document.querySelector('#addClientModal .btn-p');
+  btn.textContent = 'Update Client';
+  btn.onclick = async () => {
+    await sb.from('clients').update({
+      first_name:v('c_fname'), last_name:v('c_lname'), company:v('c_company'),
+      phone:v('c_phone'), email:v('c_email'), location:v('c_location'),
+      nif:v('c_nif'), notes:v('c_notes')
+    }).eq('id', id);
+    showToast('Client updated');
+    closeModal('addClientModal');
+    btn.textContent = 'Save Client';
+    btn.onclick = saveClient;
+    await loadAll(); renderClients();
+  };
+  openModal('addClientModal');
+}
+
+// Edit Invoice (job detail)
+function editInvoice(id) {
+  const i = DB.invoices.find(x=>x.id===id);
+  if(!i) return;
+  document.getElementById('ji_num').value = i.invoice_number||'';
+  document.getElementById('ji_date').value = i.date||'';
+  document.getElementById('ji_desc').value = i.description||'';
+  document.getElementById('ji_exc').value = i.exc_vat||'';
+  document.getElementById('ji_status').value = i.status||'Pending';
+  showVat('ji_exc','ji_vat_h','jie','jiv','jii');
+  const btn = document.querySelector('#jobInvModal .btn-p');
+  btn.textContent = 'Update Invoice';
+  btn.onclick = async () => {
+    await sb.from('invoices').update({
+      invoice_number:v('ji_num'), description:v('ji_desc'),
+      exc_vat:parseFloat(v('ji_exc'))||0, date:v('ji_date')||null, status:v('ji_status')
+    }).eq('id', id);
+    showToast('Invoice updated');
+    closeModal('jobInvModal');
+    btn.textContent = 'Add Invoice';
+    btn.onclick = saveJobInvoice;
+    ['ji_num','ji_desc','ji_exc','ji_date'].forEach(clearField);
+    await loadAll(); currentJobTab='invoices'; renderJobDetail();
+  };
+  openModal('jobInvModal');
+}
+
+// Edit Invoice (global)
+function editInvoiceGlobal(id) {
+  const i = DB.invoices.find(x=>x.id===id);
+  if(!i) return;
+  document.getElementById('inv_num').value = i.invoice_number||'';
+  document.getElementById('inv_date').value = i.date||'';
+  document.getElementById('inv_job').value = i.job_id||'';
+  document.getElementById('inv_desc').value = i.description||'';
+  document.getElementById('inv_exc').value = i.exc_vat||'';
+  document.getElementById('inv_status').value = i.status||'Pending';
+  showVat('inv_exc','inv_vat_h','iv_e','iv_v','iv_i');
+  const btn = document.querySelector('#addInvoiceModal .btn-p');
+  btn.textContent = 'Update Invoice';
+  btn.onclick = async () => {
+    await sb.from('invoices').update({
+      invoice_number:v('inv_num'), job_id:v('inv_job')||null,
+      description:v('inv_desc'), exc_vat:parseFloat(v('inv_exc'))||0,
+      date:v('inv_date')||null, status:v('inv_status')
+    }).eq('id', id);
+    showToast('Invoice updated');
+    closeModal('addInvoiceModal');
+    btn.textContent = 'Save Invoice';
+    btn.onclick = saveInvoice;
+    await loadAll(); renderInvoices();
+  };
+  openModal('addInvoiceModal');
+}
+
+// Edit Cost (job detail)
+function editCost(id) {
+  const c = DB.costs.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('jc_desc').value = c.description||'';
+  document.getElementById('jc_cat').value = c.category||'Labour';
+  document.getElementById('jc_supplier').value = c.supplier||'';
+  document.getElementById('jc_exc').value = c.exc_vat||'';
+  document.getElementById('jc_date').value = c.date||'';
+  document.getElementById('jc_status').value = c.status||'Unpaid';
+  showVat('jc_exc','jc_vat_h','jce','jcv','jci');
+  const btn = document.querySelector('#jobCostModal .btn-p');
+  btn.textContent = 'Update Cost';
+  btn.onclick = async () => {
+    await sb.from('costs').update({
+      description:v('jc_desc'), category:v('jc_cat'), supplier:v('jc_supplier'),
+      exc_vat:parseFloat(v('jc_exc'))||0, date:v('jc_date')||null, status:v('jc_status')
+    }).eq('id', id);
+    showToast('Cost updated');
+    closeModal('jobCostModal');
+    btn.textContent = 'Add Cost';
+    btn.onclick = saveJobCost;
+    ['jc_desc','jc_supplier','jc_exc','jc_date'].forEach(clearField);
+    await loadAll(); currentJobTab='costs'; renderJobDetail();
+  };
+  openModal('jobCostModal');
+}
+
+// Edit Cost (global)
+function editCostGlobal(id) {
+  const c = DB.costs.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('co_desc').value = c.description||'';
+  document.getElementById('co_job').value = c.job_id||'';
+  document.getElementById('co_cat').value = c.category||'Labour';
+  document.getElementById('co_supplier').value = c.supplier||'';
+  document.getElementById('co_exc').value = c.exc_vat||'';
+  document.getElementById('co_date').value = c.date||'';
+  document.getElementById('co_status').value = c.status||'Unpaid';
+  showVat('co_exc','co_vat_h','cv_e','cv_v','cv_i');
+  const btn = document.querySelector('#addCostModal .btn-p');
+  btn.textContent = 'Update Cost';
+  btn.onclick = async () => {
+    await sb.from('costs').update({
+      job_id:v('co_job')||null, description:v('co_desc'), category:v('co_cat'),
+      supplier:v('co_supplier'), exc_vat:parseFloat(v('co_exc'))||0,
+      date:v('co_date')||null, status:v('co_status')
+    }).eq('id', id);
+    showToast('Cost updated');
+    closeModal('addCostModal');
+    btn.textContent = 'Save Cost';
+    btn.onclick = saveCost;
+    await loadAll(); renderCosts();
+  };
+  openModal('addCostModal');
+}
+
+// Edit Note (job detail)
+function editNote(id) {
+  const n = DB.notes.find(x=>x.id===id);
+  if(!n) return;
+  document.getElementById('jn_title').value = n.title||'';
+  document.getElementById('jn_date').value = n.date||'';
+  document.getElementById('jn_body').value = n.body||'';
+  const btn = document.querySelector('#jobNoteModal .btn-p');
+  btn.textContent = 'Update Note';
+  btn.onclick = async () => {
+    await sb.from('notes').update({
+      title:v('jn_title'), date:v('jn_date')||todayStr(), body:v('jn_body')
+    }).eq('id', id);
+    showToast('Note updated');
+    closeModal('jobNoteModal');
+    btn.textContent = 'Save Note';
+    btn.onclick = saveJobNote;
+    ['jn_title','jn_body','jn_date'].forEach(clearField);
+    await loadAll(); currentJobTab='notes'; renderJobDetail();
+  };
+  openModal('jobNoteModal');
+}
+
+// Edit Note (global)
+function editNoteGlobal(id) {
+  const n = DB.notes.find(x=>x.id===id);
+  if(!n) return;
+  document.getElementById('nt_title').value = n.title||'';
+  document.getElementById('nt_date').value = n.date||'';
+  document.getElementById('nt_job').value = n.job_id||'';
+  document.getElementById('nt_body').value = n.body||'';
+  const btn = document.querySelector('#addNoteModal .btn-p');
+  btn.textContent = 'Update Note';
+  btn.onclick = async () => {
+    await sb.from('notes').update({
+      title:v('nt_title'), job_id:v('nt_job')||null,
+      date:v('nt_date')||todayStr(), body:v('nt_body')
+    }).eq('id', id);
+    showToast('Note updated');
+    closeModal('addNoteModal');
+    btn.textContent = 'Save Note';
+    btn.onclick = saveNote;
+    await loadAll(); renderNotes();
+  };
+  openModal('addNoteModal');
+}
+
+
+// ── EXPENSES ──────────────────────────────────
+const DAN_CATS = ['Restaurant & Entertainment','Client Meals','Travel','Accommodation',"Dan's Other"];
+const AD_CATS = ['Social Media Ads','Google Ads','Print & Flyers','Website','Signage','Photography & Video','Advertising Other'];
+
+function renderExpenses(q='') {
+  if(!DB.expenses) DB.expenses=[];
+  const list=DB.expenses.filter(e=>!q||e.description?.toLowerCase().includes(q.toLowerCase())||e.supplier?.toLowerCase().includes(q.toLowerCase())||e.category?.toLowerCase().includes(q.toLowerCase()));
+  
+  const bizExpenses=DB.expenses.filter(e=>!DAN_CATS.includes(e.category)&&!AD_CATS.includes(e.category));
+  const adExpenses=DB.expenses.filter(e=>AD_CATS.includes(e.category));
+  const danExpenses=DB.expenses.filter(e=>DAN_CATS.includes(e.category));
+  const bizTotal=bizExpenses.reduce((a,e)=>a+(e.exc_vat||0),0);
+  const adTotal=adExpenses.reduce((a,e)=>a+(e.exc_vat||0),0);
+  const danTotal=danExpenses.reduce((a,e)=>a+(e.exc_vat||0),0);
+  const total=bizTotal+adTotal+danTotal;
+  const paid=DB.expenses.filter(e=>e.status==='Paid').reduce((a,e)=>a+(e.exc_vat||0),0);
+  const unpaid=DB.expenses.filter(e=>e.status==='Unpaid').reduce((a,e)=>a+(e.exc_vat||0),0);
+
+  document.getElementById('expenseStats').innerHTML=`
+    <div class="sc r"><div class="sc-lbl">Business Overheads (exc)</div><div class="sc-val">${fmt(bizTotal)}</div><div class="sc-sub">VAT: ${fmt(bizTotal*VAT)}</div></div>
+    <div class="sc b"><div class="sc-lbl">Advertising (exc)</div><div class="sc-val">${fmt(adTotal)}</div><div class="sc-sub">VAT: ${fmt(adTotal*VAT)}</div></div>
+    <div class="sc pu"><div class="sc-lbl">Dan's Expenses (exc)</div><div class="sc-val">${fmt(danTotal)}</div><div class="sc-sub">VAT: ${fmt(danTotal*VAT)}</div></div>
+    <div class="sc g"><div class="sc-lbl">Total All (exc)</div><div class="sc-val">${fmt(total)}</div><div class="sc-sub">Paid: ${fmt(paid)}</div></div>`;
+
+  function expRow(e) {
+    return `<tr>
+      <td><div class="cn">${e.description||''}</div>${e.notes?`<div class="cs">${e.notes}</div>`:''}</td>
+      <td><span class="badge b-cat">${e.category||''}</span></td>
+      <td style="font-size:12px;color:var(--t2)">${e.supplier||''}</td>
+      <td style="font-family:var(--fm)">${fmt(e.exc_vat)}</td>
+      <td style="font-family:var(--fm);color:var(--gold)">${fmt((e.exc_vat||0)*VAT)}</td>
+      <td style="font-family:var(--fm);color:var(--accent)">${fmt((e.exc_vat||0)*(1+VAT))}</td>
+      <td style="font-size:11px;font-family:var(--fm);color:var(--t3)">${e.date||''}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td style="display:flex;gap:4px">
+        <button class="btn btn-g btn-sm" onclick="editExpense('${e.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="delExpense('${e.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }
+
+  const filteredBiz=list.filter(e=>!DAN_CATS.includes(e.category)&&!AD_CATS.includes(e.category));
+  const filteredAd=list.filter(e=>AD_CATS.includes(e.category));
+  const filteredDan=list.filter(e=>DAN_CATS.includes(e.category));
+
+  const bizSection = `
+    <div style="margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--s3);border-radius:8px;border-left:3px solid var(--accent);margin-bottom:12px">
+        <div style="font-family:var(--fd);font-size:18px;letter-spacing:1px;color:var(--accent)">BUSINESS OVERHEADS</div>
+        <div style="font-family:var(--fm);font-size:13px">
+          <span style="color:var(--t3)">Subtotal exc VAT: </span><span style="font-weight:600">${fmt(bizTotal)}</span>
+          <span style="color:var(--t3);margin-left:12px">VAT: </span><span style="color:var(--gold);font-weight:600">${fmt(bizTotal*VAT)}</span>
+          <span style="color:var(--t3);margin-left:12px">Inc: </span><span style="color:var(--accent);font-weight:600">${fmt(bizTotal*(1+VAT))}</span>
+        </div>
+      </div>
+      ${filteredBiz.length ? `<div class="card" style="padding:0"><div class="tbl-wrap"><table>
+        <thead><tr><th>Description</th><th>Category</th><th>Supplier</th><th>Exc VAT</th><th>VAT 23%</th><th>Inc VAT</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>${filteredBiz.map(expRow).join('')}</tbody>
+      </table></div></div>` : '<div style="font-size:12px;color:var(--t3);padding:10px 16px">No business overhead expenses yet</div>'}
+    </div>`;
+
+  const adSection = `
+    <div style="margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--s3);border-radius:8px;border-left:3px solid var(--blue);margin-bottom:12px">
+        <div style="font-family:var(--fd);font-size:18px;letter-spacing:1px;color:var(--blue)">ADVERTISING</div>
+        <div style="font-family:var(--fm);font-size:13px">
+          <span style="color:var(--t3)">Subtotal exc VAT: </span><span style="font-weight:600">${fmt(adTotal)}</span>
+          <span style="color:var(--t3);margin-left:12px">VAT: </span><span style="color:var(--gold);font-weight:600">${fmt(adTotal*VAT)}</span>
+          <span style="color:var(--t3);margin-left:12px">Inc: </span><span style="color:var(--blue);font-weight:600">${fmt(adTotal*(1+VAT))}</span>
+        </div>
+      </div>
+      ${filteredAd.length ? `<div class="card" style="padding:0"><div class="tbl-wrap"><table>
+        <thead><tr><th>Description</th><th>Category</th><th>Supplier</th><th>Exc VAT</th><th>VAT 23%</th><th>Inc VAT</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>${filteredAd.map(expRow).join('')}</tbody>
+      </table></div></div>` : '<div style="font-size:12px;color:var(--t3);padding:10px 16px">No advertising expenses yet</div>'}
+    </div>`;
+
+  const danSection = `
+    <div style="margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--s3);border-radius:8px;border-left:3px solid var(--purple);margin-bottom:12px">
+        <div style="font-family:var(--fd);font-size:18px;letter-spacing:1px;color:var(--purple)">DAN'S EXPENSES</div>
+        <div style="font-family:var(--fm);font-size:13px">
+          <span style="color:var(--t3)">Subtotal exc VAT: </span><span style="font-weight:600">${fmt(danTotal)}</span>
+          <span style="color:var(--t3);margin-left:12px">VAT: </span><span style="color:var(--gold);font-weight:600">${fmt(danTotal*VAT)}</span>
+          <span style="color:var(--t3);margin-left:12px">Inc: </span><span style="color:var(--purple);font-weight:600">${fmt(danTotal*(1+VAT))}</span>
+        </div>
+      </div>
+      ${filteredDan.length ? `<div class="card" style="padding:0"><div class="tbl-wrap"><table>
+        <thead><tr><th>Description</th><th>Category</th><th>Supplier</th><th>Exc VAT</th><th>VAT 23%</th><th>Inc VAT</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>${filteredDan.map(expRow).join('')}</tbody>
+      </table></div></div>` : '<div style="font-size:12px;color:var(--t3);padding:10px 16px">No personal expenses yet</div>'}
+    </div>`;
+
+  document.getElementById('expensesTable').innerHTML='';
+  document.getElementById('expensesTableWrap').innerHTML = DB.expenses.length===0 
+    ? '<div class="empty"><div class="empty-ico">🧾</div><div class="empty-t">No expenses yet</div><div class="empty-s">Add fuel, tools, insurance, restaurants and other expenses here</div></div>'
+    : bizSection + adSection + danSection;
+}
+
+async function saveExpense() {
+  const exc=parseFloat(v('ex_exc'))||0;
+  if(!exc){showToast('Amount required','err');return;}
+  const {error}=await sb.from('expenses').insert([{
+    description:v('ex_desc'), category:v('ex_cat'), supplier:v('ex_supplier'),
+    exc_vat:exc, date:v('ex_date')||null, status:v('ex_status'), notes:v('ex_notes')
+  }]);
+  if(error){showToast('Error: '+error.message,'err');return;}
+  showToast('Expense saved'); closeModal('addExpenseModal');
+  ['ex_desc','ex_supplier','ex_exc','ex_date','ex_notes'].forEach(clearField);
+  document.getElementById('ex_vat_h').style.display='none';
+  await loadAll(); renderExpenses();
+}
+
+async function delExpense(id) {
+  if(!confirm('Delete this expense?')) return;
+  await sb.from('expenses').delete().eq('id',id);
+  showToast('Expense removed'); await loadAll(); renderExpenses();
+}
+
+function editExpense(id) {
+  const e=DB.expenses.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('ex_desc').value=e.description||'';
+  document.getElementById('ex_cat').value=e.category||'Tool Purchase';
+  document.getElementById('ex_supplier').value=e.supplier||'';
+  document.getElementById('ex_exc').value=e.exc_vat||'';
+  document.getElementById('ex_date').value=e.date||'';
+  document.getElementById('ex_status').value=e.status||'Unpaid';
+  document.getElementById('ex_notes').value=e.notes||'';
+  showVat('ex_exc','ex_vat_h','exe','exv','exi');
+  const btn=document.querySelector('#addExpenseModal .btn-p');
+  btn.textContent='Update Expense';
+  btn.onclick=async()=>{
+    await sb.from('expenses').update({
+      description:v('ex_desc'), category:v('ex_cat'), supplier:v('ex_supplier'),
+      exc_vat:parseFloat(v('ex_exc'))||0, date:v('ex_date')||null,
+      status:v('ex_status'), notes:v('ex_notes')
+    }).eq('id',id);
+    showToast('Expense updated');
+    closeModal('addExpenseModal');
+    btn.textContent='Save Expense'; btn.onclick=saveExpense;
+    await loadAll(); renderExpenses();
+  };
+  openModal('addExpenseModal');
+}
+
+
+// ── VARIATIONS ────────────────────────────────
+function renderVariationsTab(vars, job) {
+  const varTotal = vars.reduce((a,v)=>a+(v.exc_vat||0),0);
+  const originalVal = job.contract_value||0;
+  const totalContract = originalVal + varTotal;
+
+  const summary = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px">
+      <div class="ps-item">
+        <div class="ps-lbl">Original Contract (exc VAT)</div>
+        <div style="font-family:var(--fd);font-size:22px">${fmt(originalVal)}</div>
+        <div style="font-size:11px;color:var(--t3);font-family:var(--fm);margin-top:4px">VAT: ${fmt(originalVal*VAT)} · Inc: ${fmt(originalVal*(1+VAT))}</div>
+      </div>
+      <div class="ps-item" style="border-color:rgba(245,158,11,.3)">
+        <div class="ps-lbl">Total Extras / Variations</div>
+        <div style="font-family:var(--fd);font-size:22px;color:var(--gold)">${fmt(varTotal)}</div>
+        <div style="font-size:11px;color:var(--t3);font-family:var(--fm);margin-top:4px">VAT: ${fmt(varTotal*VAT)} · Inc: ${fmt(varTotal*(1+VAT))}</div>
+      </div>
+      <div class="ps-item" style="border-color:rgba(34,197,94,.3)">
+        <div class="ps-lbl">Total Contract Value (exc VAT)</div>
+        <div style="font-family:var(--fd);font-size:22px;color:var(--green)">${fmt(totalContract)}</div>
+        <div style="font-size:11px;color:var(--t3);font-family:var(--fm);margin-top:4px">VAT: ${fmt(totalContract*VAT)} · Inc: ${fmt(totalContract*(1+VAT))}</div>
+      </div>
+    </div>`;
+
+  const rows = vars.length ? vars.map(v=>`
+    <div class="ic-row">
+      <div class="ic-dot" style="background:${v.status==='Approved'?'var(--green)':v.status==='Pending'?'var(--gold)':'var(--red)'}"></div>
+      <div style="flex:1">
+        <div class="ic-desc">${v.description||''}</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:4px;padding:6px 10px;background:var(--s3);border-radius:6px;font-family:var(--fm)">
+          <div><span style="color:var(--t3)">Exc VAT: </span><span style="font-weight:600;color:var(--gold)">${fmt(v.exc_vat)}</span></div>
+          <div><span style="color:var(--t3)">VAT 23%: </span><span style="font-weight:600;color:var(--gold)">${fmt((v.exc_vat||0)*VAT)}</span></div>
+          <div><span style="color:var(--t3)">Inc VAT: </span><span style="font-weight:600;color:var(--accent)">${fmt((v.exc_vat||0)*(1+VAT))}</span></div>
+        </div>
+        <div class="ic-sub">${v.date||''} · <span class="badge ${v.status==='Approved'?'b-won':v.status==='Pending'?'b-pending':'b-lost'}">${(v.status||'').toUpperCase()}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+        <button class="ic-del" onclick="editVariation('${v.id}')">✏️ Edit</button>
+        <button class="ic-del" onclick="delVariation('${v.id}')">🗑 Delete</button>
+      </div>
+    </div>`).join('') : `<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">No variations yet</div><div class="empty-s">Add client extras and change orders here</div></div>`;
+
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:13px;color:var(--t2)">Upsell value: <span style="color:var(--gold);font-family:var(--fm);font-weight:600">${fmt(varTotal)}</span> <span style="color:var(--t3);font-size:11px">(${originalVal>0?Math.round((varTotal/originalVal)*100):0}% above original)</span></div>
+      <button class="btn btn-p" onclick="openModal('jobVariationModal')">+ Add Variation</button>
+    </div>
+    ${summary}
+    ${rows}`;
+}
+
+async function saveVariation() {
+  const exc = parseFloat(v('jv_exc'))||0;
+  if(!exc){showToast('Amount required','err');return;}
+  await sb.from('variations').insert([{
+    job_id:currentJobId, description:v('jv_desc'),
+    exc_vat:exc, date:v('jv_date')||null, status:v('jv_status')
+  }]);
+  showToast('Variation added'); closeModal('jobVariationModal');
+  ['jv_desc','jv_exc','jv_date'].forEach(clearField);
+  document.getElementById('jv_vat_h').style.display='none';
+  await loadAll(); currentJobTab='variations'; renderJobDetail();
+}
+
+async function delVariation(id) {
+  await sb.from('variations').delete().eq('id',id);
+  showToast('Variation removed'); await loadAll(); currentJobTab='variations'; renderJobDetail();
+}
+
+function editVariation(id) {
+  const va = DB.variations.find(x=>x.id===id);
+  if(!va) return;
+  document.getElementById('jv_desc').value = va.description||'';
+  document.getElementById('jv_exc').value = va.exc_vat||'';
+  document.getElementById('jv_date').value = va.date||'';
+  document.getElementById('jv_status').value = va.status||'Pending';
+  showVat('jv_exc','jv_vat_h','jve','jvv','jvi');
+  const btn = document.querySelector('#jobVariationModal .btn-p');
+  btn.textContent = 'Update Variation';
+  btn.onclick = async () => {
+    await sb.from('variations').update({
+      description:v('jv_desc'), exc_vat:parseFloat(v('jv_exc'))||0,
+      date:v('jv_date')||null, status:v('jv_status')
+    }).eq('id',id);
+    showToast('Variation updated');
+    closeModal('jobVariationModal');
+    btn.textContent='Add Variation'; btn.onclick=saveVariation;
+    ['jv_desc','jv_exc','jv_date'].forEach(clearField);
+    document.getElementById('jv_vat_h').style.display='none';
+    await loadAll(); currentJobTab='variations'; renderJobDetail();
+  };
+  openModal('jobVariationModal');
+}
+
+// ── BOOT ──────────────────────────────────────
+(function boot() {
+  const url=localStorage.getItem('bf_url');
+  const key=localStorage.getItem('bf_key');
+  if(url && key) {
+    initSupabase(url,key);
+    startApp();
+  } else {
+    document.getElementById('setupScreen').style.display='flex';
+  }
+})();
 </script>
-
 </body>
 </html>
